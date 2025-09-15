@@ -442,7 +442,16 @@ class RsywxApiService
             ];
 
             if (!empty($queryParams)) {
-                $options['query'] = $queryParams;
+                // Convert boolean values to string 'true'/'false' for API compatibility
+                $processedParams = [];
+                foreach ($queryParams as $key => $value) {
+                    if (is_bool($value)) {
+                        $processedParams[$key] = $value ? 'true' : 'false';
+                    } else {
+                        $processedParams[$key] = $value;
+                    }
+                }
+                $options['query'] = $processedParams;
             }
 
             if (!empty($body)) {

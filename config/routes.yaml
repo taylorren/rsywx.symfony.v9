@@ -11,6 +11,10 @@ stats:
     path: /stats
     controller: App\Controller\HomeController::stats
 
+random_books:
+    path: /random-books
+    controller: App\Controller\HomeController::randomBooks
+
 # Books routes
 books_dashboard:
     path: /books

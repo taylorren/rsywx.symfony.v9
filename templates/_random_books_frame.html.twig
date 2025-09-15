@@ -1,0 +1,38 @@
+<turbo-frame id="random-books">
+    <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-shuffle"></i> 手气不错</h5>
+            <a href="{{ path('random_books', {'refresh': 'true'}) }}" class="btn btn-sm btn-outline-primary">再换一批</a>
+        </div>
+        <div class="card-body">
+            {% if random_books is not empty %}
+                <div class="row g-3">
+                    {% for book in random_books %}
+                        <div class="col-6 col-lg-3">
+                            <div class="text-center">
+                                <div class="mb-2">
+                                    {% if book.hasCover %}
+                                        <img src="/covers/{{ book.bookid }}.webp" alt="{{ book.title }}" class="rounded shadow-sm mx-auto d-block" style="width: 100px; height: 140px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-secondary rounded d-flex align-items-center justify-content-center mx-auto shadow-sm" style="width: 100px; height: 140px;">
+                                            <i class="bi bi-book text-white fs-3"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <h6 class="mb-1 small">
+                                    <a href="{{ path('book_details', {bookId: book.bookid}) }}" class="text-decoration-none text-truncate d-block" title="{{ book.title }}">
+                                        {{ book.title }}
+                                    </a>
+                                </h6>
+                                <p class="mb-1 text-muted small text-truncate" title="{{ book.author }}">{{ book.author }}</p>
+                                <small class="text-muted">{{ book.formattedPrice }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted text-center">暂无图书</p>
+            {% endif %}
+        </div>
+    </div>
+</turbo-frame>

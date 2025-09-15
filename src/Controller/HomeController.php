@@ -8,6 +8,7 @@ use App\DTO\CollectionStats;
 use App\DTO\WordOfTheDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Psr\Log\LoggerInterface;
 
 final class HomeController extends AbstractController
@@ -90,6 +91,35 @@ final class HomeController extends AbstractController
                 'word_of_the_day' => null,
             ]);
         }
+    }
+
+    /**
+     * Get random books for Turbo frame updates
+     */
+    public function randomBooks(Request $request): Response
+    {
+        try {
+            $refresh = $request->query->get('refresh', 'false') === 'true';
+            $randomBooks = $this->getRandomBooks($refresh);
+            
+            return $this->render('_random_books_frame.html.twig', [
+                'random_books' => $randomBooks,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load random books: ' . $e->getMessage());
+            
+            return $this->render('_random_books_frame.html.twig', [
+                'random_books' => [],
+            ]);
+        }
+    }
+
+    /**
+     * Extract random books fetching logic for reuse
+     */
+    private function getRandomBooks(bool $refresh = true): array
+    {
+        return $this->apiService->getRandomBooks(4, $refresh);
     }
 
     /**
