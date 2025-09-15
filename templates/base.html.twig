@@ -4,14 +4,22 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}RSYWX Library{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>📚</text></svg>">
+        <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
         
         <!-- Bootstrap 5 CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+        <!-- Font Awesome for dark mode icons -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         
         {% block stylesheets %}
         <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                padding-top: 76px; /* 为固定导航栏留出空间 */
+            }
             .navbar-brand {
                 font-weight: bold;
                 font-size: 1.5rem;
@@ -38,11 +46,6 @@
             footer {
                 margin-top: auto;
             }
-            body {
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
-            }
             main {
                 flex: 1;
             }
@@ -54,76 +57,14 @@
         {% endblock %}
     </head>
     <body>
-        <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="{{ path('app_home') }}">
-                    <i class="bi bi-book"></i> RSYWX Library
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_home') }}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('books_dashboard') }}">Books</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                Browse
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ path('books_latest') }}">Latest Books</a></li>
-                                <li><a class="dropdown-item" href="{{ path('books_random') }}">Random Books</a></li>
-                                <li><a class="dropdown-item" href="{{ path('books_recent') }}">Recently Visited</a></li>
-                                <li><a class="dropdown-item" href="{{ path('books_forgotten') }}">Forgotten Books</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('stats') }}">Statistics</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('about') }}">About</a>
-                        </li>
-                    </ul>
-                    
-                    <!-- Search Form -->
-                    <form class="d-flex search-box" method="GET" action="{{ path('books_search') }}">
-                        <input class="form-control me-2" type="search" name="q" placeholder="Search books..." aria-label="Search">
-                        <button class="btn btn-outline-light" type="submit">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </nav>
+        {{ include('_header.html.twig') }}
 
         <!-- Main Content -->
         <main class="container-fluid py-4">
             {% block body %}{% endblock %}
         </main>
 
-        <!-- Footer -->
-        <footer class="bg-dark text-light py-4 mt-5">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5>RSYWX Library</h5>
-                        <p class="mb-0">Personal book collection management system</p>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <p class="mb-0">
-                            <small>Powered by Symfony & Bootstrap</small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        {{ include('_footer.html.twig') }}
 
         <!-- Bootstrap 5 JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

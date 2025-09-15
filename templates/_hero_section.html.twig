@@ -1,0 +1,52 @@
+<!-- Hero Section with Carousel -->
+<style>
+#heroCarousel .carousel-control-prev,
+#heroCarousel .carousel-control-next {
+    top: 75%;
+    transform: translateY(-50%);
+    height: 60px;
+    width: 60px;
+}
+</style>
+<div class="row mb-5">
+    <div class="col-12">
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner rounded">
+                <div class="carousel-item active">
+                    <div class="hero-slide position-relative" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hannibal.png'); background-size: cover; background-position: center; min-height: 500px;">
+                        <div class="carousel-caption d-flex flex-column justify-content-end h-100 text-start pb-5">
+                            <h1 class="display-4 fw-bold">First principles, Clarice. Simplicity. </h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide position-relative" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hilbert.png'); background-size: cover; background-position: center; min-height: 500px;">
+                        <div class="carousel-caption d-flex flex-column justify-content-end h-100 text-start pb-5">
+                            <h1 class="display-4 fw-bold">Wir müssen wissen. <br>Wir werden wissen.</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="hero-slide position-relative" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/keynes.png'); background-size: cover; background-position: center; min-height: 500px;">
+                        <div class="carousel-caption d-flex flex-column justify-content-end h-100 text-start pb-5">
+                            <h1 class="display-4 fw-bold">...the sound principle is to take the most generous course.</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</div>

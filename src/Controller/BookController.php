@@ -3,13 +3,14 @@
 namespace App\Controller;
 
 use App\Service\RsywxApiService;
+use App\DTO\Book;
+use App\DTO\CollectionStats;
+use App\DTO\WordOfTheDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 
-#[Route('/books')]
 class BookController extends AbstractController
 {
     public function __construct(
@@ -18,9 +19,8 @@ class BookController extends AbstractController
     ) {}
 
     /**
-     * Display collection dashboard with statistics
+     * Display collection dashboard with statistics using parallel API requests
      */
-    #[Route('/', name: 'books_dashboard')]
     public function dashboard(): Response
     {
         try {
@@ -51,7 +51,6 @@ class BookController extends AbstractController
     /**
      * Display book details
      */
-    #[Route('/{bookId}', name: 'book_details', requirements: ['bookId' => '.+'])]
     public function details(string $bookId, Request $request): Response
     {
         try {
@@ -81,7 +80,6 @@ class BookController extends AbstractController
     /**
      * Search books
      */
-    #[Route('/search', name: 'books_search', methods: ['GET'])]
     public function search(Request $request): Response
     {
         $query = $request->query->get('q', '');
@@ -110,7 +108,6 @@ class BookController extends AbstractController
     /**
      * Display latest books
      */
-    #[Route('/latest', name: 'books_latest')]
     public function latest(Request $request): Response
     {
         try {
@@ -138,7 +135,6 @@ class BookController extends AbstractController
     /**
      * Display random books
      */
-    #[Route('/random', name: 'books_random')]
     public function random(Request $request): Response
     {
         try {
@@ -166,7 +162,6 @@ class BookController extends AbstractController
     /**
      * Display recently visited books
      */
-    #[Route('/recent', name: 'books_recent')]
     public function recent(Request $request): Response
     {
         try {
@@ -194,7 +189,6 @@ class BookController extends AbstractController
     /**
      * Display forgotten books
      */
-    #[Route('/forgotten', name: 'books_forgotten')]
     public function forgotten(Request $request): Response
     {
         try {
@@ -222,8 +216,7 @@ class BookController extends AbstractController
     /**
      * Display books purchased today (or on specific date)
      */
-    #[Route('/today/{month}/{date}', name: 'books_today', requirements: ['month' => '\d+', 'date' => '\d+'])]
-    public function today(int $month = null, int $date = null, Request $request): Response
+    public function today(?int $month = null, ?int $date = null, Request $request): Response
     {
         try {
             $refresh = $request->query->getBoolean('refresh', false);

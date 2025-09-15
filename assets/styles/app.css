@@ -1,3 +1,229 @@
+:root {
+    /* Light theme colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+    --border-color: #dee2e6;
+    --card-bg: #ffffff;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --navbar-bg: #007bff;
+    --navbar-text: #ffffff;
+    --btn-primary-bg: #007bff;
+    --btn-primary-text: #ffffff;
+    --btn-outline-border: #007bff;
+    --btn-outline-text: #007bff;
+    --stats-card-bg: #ffffff;
+    --stats-card-shadow: rgba(0, 0, 0, 0.1);
+    --alert-danger-bg: #f8d7da;
+    --alert-danger-text: #721c24;
+    --alert-danger-border: #f5c6cb;
+}
+
+[data-theme="dark"] {
+    /* Dark theme colors */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-muted: #888888;
+    --border-color: #404040;
+    --card-bg: #2d2d2d;
+    --card-shadow: rgba(0, 0, 0, 0.3);
+    --navbar-bg: #0056b3;
+    --navbar-text: #ffffff;
+    --btn-primary-bg: #0056b3;
+    --btn-primary-text: #ffffff;
+    --btn-outline-border: #0056b3;
+    --btn-outline-text: #4dabf7;
+    --stats-card-bg: #2d2d2d;
+    --stats-card-shadow: rgba(0, 0, 0, 0.3);
+    --alert-danger-bg: #2c1618;
+    --alert-danger-text: #f8d7da;
+    --alert-danger-border: #3d1a1e;
+}
+
+/* Base styles */
 body {
-    background-color: skyblue;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--navbar-bg) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+    color: var(--navbar-text) !important;
+}
+
+/* Cards */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0.125rem 0.25rem var(--card-shadow);
+    color: var(--text-primary);
+}
+
+.card-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Statistics cards */
+.stats-card {
+    background-color: var(--stats-card-bg);
+    box-shadow: 0 0.25rem 0.5rem var(--stats-card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem var(--stats-card-shadow);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+.btn-outline-primary {
+    border-color: var(--btn-outline-border);
+    color: var(--btn-outline-text);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--btn-primary-bg);
+    border-color: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+}
+
+/* Forms */
+.form-control {
+    background-color: var(--bg-primary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.form-control:focus {
+    background-color: var(--bg-primary);
+    border-color: var(--btn-primary-bg);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Alerts */
+.alert-danger {
+    background-color: var(--alert-danger-bg);
+    border-color: var(--alert-danger-border);
+    color: var(--alert-danger-text);
+}
+
+/* Jumbotron */
+.jumbotron {
+    background-color: var(--btn-primary-bg) !important;
+    color: var(--btn-primary-text) !important;
+}
+
+/* Links */
+a {
+    color: var(--btn-outline-text);
+}
+
+a:hover {
+    color: var(--btn-primary-bg);
+}
+
+/* Dark mode toggle button */
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--btn-primary-bg);
+    border: 2px solid var(--border-color);
+    color: var(--btn-primary-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px var(--card-shadow);
+}
+
+.dark-mode-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px var(--card-shadow);
+}
+
+.dark-mode-toggle i {
+    font-size: 1.2rem;
+}
+
+/* Dropdown menus */
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Search box */
+.search-box .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--navbar-text);
+}
+
+.search-box .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.search-box .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: var(--navbar-text);
+}
+
+/* Book covers and images */
+img {
+    transition: opacity 0.3s ease;
+}
+
+[data-theme="dark"] img {
+    opacity: 0.9;
+}
+
+/* Text colors */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* Smooth transitions for theme switching */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

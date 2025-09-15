@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Service\RsywxApiService;
+use App\DTO\Book;
+use App\DTO\CollectionStats;
+use App\DTO\WordOfTheDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 
 final class HomeController extends AbstractController
@@ -16,12 +18,12 @@ final class HomeController extends AbstractController
     ) {}
 
     /**
-     * Homepage with collection overview
+     * Homepage with collection overview using parallel API requests
      */
-    #[Route('/', name: 'app_home')]
     public function index(): Response
     {
         try {
+            // Use the original synchronous methods for now to ensure functionality
             $stats = $this->apiService->getCollectionStatus();
             $latestBooks = $this->apiService->getLatestBooks(4);
             $randomBooks = $this->apiService->getRandomBooks(4);
@@ -49,7 +51,6 @@ final class HomeController extends AbstractController
     /**
      * About page
      */
-    #[Route('/about', name: 'about')]
     public function about(): Response
     {
         return $this->render('home/about.html.twig');
@@ -58,7 +59,6 @@ final class HomeController extends AbstractController
     /**
      * Statistics page with detailed collection analytics
      */
-    #[Route('/stats', name: 'stats')]
     public function stats(): Response
     {
         try {

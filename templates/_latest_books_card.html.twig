@@ -1,0 +1,31 @@
+<!-- Latest Books Card -->
+{% if latest_books is not empty %}
+{% set book = latest_books[0] %}
+<div class="col-md-3 mb-3">
+    <div class="card shadow-sm h-100">
+        {% if book.hasCover %}
+            <img src="/covers/{{ book.bookid }}.webp" alt="{{ book.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+        {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-book text-white" style="font-size: 3rem;"></i>
+            </div>
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+            <h6 class="card-title text-muted mb-3">最新图书</h6>
+            <p class="card-text flex-grow-1">
+                <strong><i class="bi bi-book-fill text-primary me-1"></i>{{ book.title }}</strong><br>
+                <small class="text-muted">
+                    <i class="bi bi-person-fill me-1"></i>【{{ book.region }}】{{ book.author }}
+                      {% if book.translated and book.copyrighter %}
+                        <br><i class="bi bi-translate me-1"></i>译者：{{ book.copyrighter }}
+                    {% endif %}
+                </small><br>
+                <small class="text-muted"><i class="bi bi-calendar-plus me-1"></i>收录于：{{ book.formattedPurchaseDate }}</small>
+            </p>
+            <a href="{{ path('book_details', {bookId: book.bookid}) }}" class="btn btn-primary btn-sm mt-auto">
+                <i class="bi bi-book-open"></i> 查看详情
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}

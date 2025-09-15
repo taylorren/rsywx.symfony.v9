@@ -1,5 +1,51 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+# Home routes
+app_home:
+    path: /
+    controller: App\Controller\HomeController::index
+
+about:
+    path: /about
+    controller: App\Controller\HomeController::about
+
+stats:
+    path: /stats
+    controller: App\Controller\HomeController::stats
+
+# Books routes
+books_dashboard:
+    path: /books
+    controller: App\Controller\BookController::dashboard
+
+books_search:
+    path: /books/search
+    controller: App\Controller\BookController::search
+    methods: [GET]
+
+books_latest:
+    path: /books/latest
+    controller: App\Controller\BookController::latest
+
+books_random:
+    path: /books/random
+    controller: App\Controller\BookController::random
+
+books_recent:
+    path: /books/recent
+    controller: App\Controller\BookController::recent
+
+books_forgotten:
+    path: /books/forgotten
+    controller: App\Controller\BookController::forgotten
+
+books_today:
+    path: /books/today/{month}/{date}
+    controller: App\Controller\BookController::today
+    requirements:
+        month: '\d+'
+        date: '\d+'
+
+book_details:
+    path: /books/{bookId}
+    controller: App\Controller\BookController::details
+    requirements:
+        bookId: '.+'

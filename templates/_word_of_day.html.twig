@@ -1,0 +1,20 @@
+<!-- Word of the Day -->
+{% if word_of_the_day %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card word-of-day">
+            <div class="card-body text-center">
+                <h5 class="card-title"><i class="bi bi-lightbulb"></i> 每日一词</h5>
+                <h3 class="mb-2">{{ word_of_the_day.word }}</h3>
+                {% if word_of_the_day.pronunciation %}
+                    <p class="mb-2"><em>[{{ word_of_the_day.pronunciation }}]</em></p>
+                {% endif %}
+                <p class="card-text">{{ word_of_the_day.definition }}</p>
+                {% if word_of_the_day.hasExamples %}
+                    <small><strong>例句：</strong> {{ word_of_the_day.firstExample }}</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

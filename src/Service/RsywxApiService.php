@@ -13,34 +13,26 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
 class RsywxApiService
 {
     private HttpClientInterface $httpClient;
     private LoggerInterface $logger;
-    private CacheInterface $cache;
     private string $baseUrl = 'http://api';
     private string $apiKey;
-    private int $cacheTimeout;
     private int $maxRetries;
 
     public function __construct(
         HttpClientInterface $httpClient,
         LoggerInterface $logger,
-        CacheInterface $cache,
         string $rsywxApiBaseUrl,
         string $rsywxApiKey,
-        int $cacheTimeout = 300, // 5 minutes default
         int $maxRetries = 3
     ) {
         $this->httpClient = $httpClient;
         $this->logger = $logger;
-        $this->cache = $cache;
         $this->baseUrl = $rsywxApiBaseUrl;
         $this->apiKey = $rsywxApiKey;
-        $this->cacheTimeout = $cacheTimeout;
         $this->maxRetries = $maxRetries;
     }
 
@@ -49,41 +41,80 @@ class RsywxApiService
      */
     public function getCollectionStatus(bool $refresh = false): ?CollectionStats
     {
-        return $this->getCachedData(
-            'collection_status',
-            fn() => $this->makeRequest('GET', '/books/status', [
+        try {
+            $response = $this->makeRequestWithRetry('GET', '/books/status', [
                 'refresh' => $refresh
-            ]),
-            fn($data) => CollectionStats::fromArray($data),
-            'Failed to get collection status'
+            ]);
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data'])) {
+                return CollectionStats::fromArray($response['data']);
+            }
+            
+            return null;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get collection status', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Make async HTTP request and return ResponseInterface for parallel processing
+     */
+    public function makeAsyncRequest(string $method, string $endpoint, array $queryParams = [], array $body = []): ResponseInterface
+    {
+        $options = [
+            'headers' => [
+                'X-API-Key' => $this->apiKey,
+                'Content-Type' => 'application/json',
+            ],
+        ];
+
+        if (!empty($queryParams)) {
+            $options['query'] = $queryParams;
+        }
+
+        if (!empty($body)) {
+            $options['json'] = $body;
+        }
+
+        return $this->httpClient->request(
+            $method,
+            $this->baseUrl . $endpoint,
+            $options
         );
     }
 
     /**
-     * Get cached data with error handling
+     * Process async response with error handling
      */
-    private function getCachedData(
-        string $cacheKey,
-        callable $dataProvider,
-        callable $transformer,
-        string $errorMessage,
-        array $logContext = [],
-        int $ttl = null
-    ) {
-        $ttl = $ttl ?? $this->cacheTimeout;
-        
+    public function processAsyncResponse(ResponseInterface $response, string $endpoint): array
+    {
         try {
-            return $this->cache->get($cacheKey, function (ItemInterface $item) use ($dataProvider, $transformer, $ttl) {
-                $item->expiresAfter($ttl);
-                $data = $dataProvider();
-                return $data ? $transformer($data) : null;
-            });
+            $statusCode = $response->getStatusCode();
+            $content = $response->toArray();
+
+            if ($statusCode >= 400) {
+                $this->logger->error('RSYWX API Error', [
+                    'endpoint' => $endpoint,
+                    'status_code' => $statusCode,
+                    'response' => $content
+                ]);
+                
+                throw new \Exception("API request failed with status {$statusCode}");
+            }
+
+            return $content;
         } catch (\Exception $e) {
-            $this->logger->error($errorMessage, array_merge($logContext, [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]));
-            return null;
+            $this->logger->error('RSYWX API Response Processing Failed', [
+                'endpoint' => $endpoint,
+                'error' => $e->getMessage()
+            ]);
+            
+            throw $e;
         }
     }
 
@@ -121,15 +152,19 @@ class RsywxApiService
      */
     public function getBookDetails(string $bookId, bool $refresh = false): ?Book
     {
-        return $this->getCachedData(
-            "book_details_{$bookId}",
-            fn() => $this->makeRequest('GET', "/books/{$bookId}", [
+        try {
+            $data = $this->makeRequestWithRetry('GET', "/books/{$bookId}", [
                 'refresh' => $refresh
-            ]),
-            fn($data) => Book::fromArray($data),
-            'Failed to get book details',
-            ['bookId' => $bookId]
-        );
+            ]);
+            return $data ? Book::fromArray($data) : null;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get book details', [
+                'bookId' => $bookId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
     }
 
     /**
@@ -137,16 +172,25 @@ class RsywxApiService
      */
     public function getLatestBooks(int $count = 5, bool $refresh = false): array
     {
-        return $this->getCachedData(
-            "latest_books_{$count}",
-            fn() => $this->makeRequest('GET', "/books/latest/{$count}", [
+        try {
+            $response = $this->makeRequestWithRetry('GET', "/books/latest/{$count}", [
                 'refresh' => $refresh
-            ]),
-            fn($data) => $data && isset($data['books']) ? array_map(fn($bookData) => Book::fromArray($bookData), $data['books']) : [],
-            'Failed to get latest books',
-            ['count' => $count],
-            120 // Cache for 2 minutes for frequently changing data
-        ) ?? [];
+            ]);
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($bookData) => Book::fromArray($bookData), $response['data']);
+            }
+            
+            return [];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get latest books', [
+                'count' => $count,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
     }
 
     /**
@@ -156,15 +200,16 @@ class RsywxApiService
     {
         // Don't cache random books as they should be different each time
         try {
-            $data = $this->makeRequestWithRetry('GET', "/books/random/{$count}", [
+            $response = $this->makeRequestWithRetry('GET', "/books/random/{$count}", [
                 'refresh' => $refresh
             ]);
             
-            if (!$data || !isset($data['books'])) {
-                return [];
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($bookData) => Book::fromArray($bookData), $response['data']);
             }
             
-            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
+            return [];
         } catch (\Exception $e) {
             $this->logger->error('Failed to get random books', [
                 'count' => $count,
@@ -180,16 +225,24 @@ class RsywxApiService
      */
     public function getRecentlyVisitedBooks(int $count = 5, bool $refresh = false): array
     {
-        return $this->getCachedData(
-            "recently_visited_books_{$count}",
-            fn() => $this->makeRequest('GET', "/books/last_visited/{$count}", [
+        try {
+            $data = $this->makeRequestWithRetry('GET', "/books/last_visited/{$count}", [
                 'refresh' => $refresh
-            ]),
-            fn($data) => $data && isset($data['books']) ? array_map(fn($bookData) => Book::fromArray($bookData), $data['books']) : [],
-            'Failed to get recently visited books',
-            ['count' => $count],
-            120 // Cache for 2 minutes for frequently changing data
-        ) ?? [];
+            ]);
+            
+            if (!$data || !isset($data['books'])) {
+                return [];
+            }
+            
+            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get recently visited books', [
+                'count' => $count,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
     }
 
     /**
@@ -197,16 +250,24 @@ class RsywxApiService
      */
     public function getForgottenBooks(int $count = 5, bool $refresh = false): array
     {
-        return $this->getCachedData(
-            "forgotten_books_{$count}",
-            fn() => $this->makeRequest('GET', "/books/forgotten/{$count}", [
+        try {
+            $data = $this->makeRequestWithRetry('GET', "/books/forgotten/{$count}", [
                 'refresh' => $refresh
-            ]),
-            fn($data) => $data && isset($data['books']) ? array_map(fn($bookData) => Book::fromArray($bookData), $data['books']) : [],
-            'Failed to get forgotten books',
-            ['count' => $count],
-            600 // Cache for 10 minutes as this data changes less frequently
-        ) ?? [];
+            ]);
+            
+            if (!$data || !isset($data['books'])) {
+                return [];
+            }
+            
+            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get forgotten books', [
+                'count' => $count,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
     }
 
     /**
@@ -214,16 +275,23 @@ class RsywxApiService
      */
     public function getTodaysBooks(bool $refresh = false): array
     {
-        return $this->getCachedData(
-            'todays_books_' . date('m-d'),
-            fn() => $this->makeRequest('GET', '/books/today', [
+        try {
+            $data = $this->makeRequestWithRetry('GET', '/books/today', [
                 'refresh' => $refresh
-            ]),
-            fn($data) => $data && isset($data['books']) ? array_map(fn($bookData) => Book::fromArray($bookData), $data['books']) : [],
-            'Failed to get today\'s books',
-            [],
-            3600 // Cache for 1 hour as this is date-specific
-        ) ?? [];
+            ]);
+            
+            if (!$data || !isset($data['books'])) {
+                return [];
+            }
+            
+            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get today\'s books', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
     }
 
     /**
@@ -231,16 +299,25 @@ class RsywxApiService
      */
     public function getBooksForDate(int $month, int $date, bool $refresh = false): array
     {
-        return $this->getCachedData(
-            "books_for_date_{$month}_{$date}",
-            fn() => $this->makeRequest('GET', "/books/today/{$month}/{$date}", [
+        try {
+            $data = $this->makeRequestWithRetry('GET', "/books/today/{$month}/{$date}", [
                 'refresh' => $refresh
-            ]),
-            fn($data) => $data && isset($data['books']) ? array_map(fn($bookData) => Book::fromArray($bookData), $data['books']) : [],
-            'Failed to get books for date',
-            ['month' => $month, 'date' => $date],
-            3600 // Cache for 1 hour as this is date-specific
-        ) ?? [];
+            ]);
+            
+            if (!$data || !isset($data['books'])) {
+                return [];
+            }
+            
+            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get books for date', [
+                'month' => $month,
+                'date' => $date,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
     }
 
     /**
@@ -256,14 +333,19 @@ class RsywxApiService
             $endpoint .= "/{$page}";
         }
 
-        return $this->getCachedData(
-            "search_{$type}_{$value}_{$page}",
-            fn() => $this->makeRequest('GET', $endpoint),
-            fn($data) => SearchResult::fromArray($data),
-            'Failed to search books',
-            ['type' => $type, 'value' => $value, 'page' => $page],
-            300 // Cache for 5 minutes
-        );
+        try {
+            $data = $this->makeRequestWithRetry('GET', $endpoint);
+            return $data ? SearchResult::fromArray($data) : null;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to search books', [
+                'type' => $type,
+                'value' => $value,
+                'page' => $page,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
     }
 
     /**
@@ -302,14 +384,16 @@ class RsywxApiService
      */
     public function getWordOfTheDay(): ?WordOfTheDay
     {
-        return $this->getCachedData(
-            'word_of_the_day_' . date('Y-m-d'),
-            fn() => $this->makeRequest('GET', '/misc/wotd'),
-            fn($data) => WordOfTheDay::fromArray($data),
-            'Failed to get word of the day',
-            [],
-            86400 // Cache for 24 hours since it's daily
-        );
+        try {
+            $data = $this->makeRequestWithRetry('GET', '/misc/wotd');
+            return $data ? WordOfTheDay::fromArray($data) : null;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get word of the day', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
     }
 
     /**
