@@ -81,11 +81,38 @@ class RsywxApiService
             $options['json'] = $body;
         }
 
+        // Return the response object immediately without waiting for completion
         return $this->httpClient->request(
             $method,
             $this->baseUrl . $endpoint,
             $options
         );
+    }
+
+    /**
+     * Make multiple parallel requests and wait for all to complete
+     */
+    public function makeParallelRequests(array $requests): array
+    {
+        $responses = [];
+        
+        // Start all requests without waiting
+        foreach ($requests as $key => $request) {
+            $responses[$key] = $this->makeAsyncRequest(
+                $request['method'],
+                $request['endpoint'],
+                $request['queryParams'] ?? [],
+                $request['body'] ?? []
+            );
+        }
+        
+        // Wait for all responses to complete
+        $results = [];
+        foreach ($responses as $key => $response) {
+            $results[$key] = $response;
+        }
+        
+        return $results;
     }
 
     /**
@@ -220,30 +247,7 @@ class RsywxApiService
         }
     }
 
-    /**
-     * Get recently visited books
-     */
-    public function getRecentlyVisitedBooks(int $count = 5, bool $refresh = false): array
-    {
-        try {
-            $data = $this->makeRequestWithRetry('GET', "/books/last_visited/{$count}", [
-                'refresh' => $refresh
-            ]);
-            
-            if (!$data || !isset($data['books'])) {
-                return [];
-            }
-            
-            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to get recently visited books', [
-                'count' => $count,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return [];
-        }
-    }
+
 
     /**
      * Get forgotten books (not visited recently)
@@ -251,15 +255,16 @@ class RsywxApiService
     public function getForgottenBooks(int $count = 5, bool $refresh = false): array
     {
         try {
-            $data = $this->makeRequestWithRetry('GET', "/books/forgotten/{$count}", [
+            $response = $this->makeRequestWithRetry('GET', "/books/forgotten/{$count}", [
                 'refresh' => $refresh
             ]);
             
-            if (!$data || !isset($data['books'])) {
-                return [];
+            // Extract data from API response structure (same as other book methods)
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($bookData) => Book::fromArray($bookData), $response['data']);
             }
             
-            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
+            return [];
         } catch (\Exception $e) {
             $this->logger->error('Failed to get forgotten books', [
                 'count' => $count,
@@ -393,6 +398,33 @@ class RsywxApiService
                 'trace' => $e->getTraceAsString()
             ]);
             return null;
+        }
+    }
+
+    /**
+     * Get recently visited books
+     */
+    public function getRecentlyVisitedBooks(int $count = 5, bool $refresh = false): array
+    {
+        try {
+            $response = $this->makeRequestWithRetry('GET', "/books/last_visited", [
+                'count' => $count,
+                'refresh' => $refresh
+            ]);
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($bookData) => Book::fromArray($bookData), $response['data']);
+            }
+            
+            return [];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get recently visited books', [
+                'count' => $count,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
         }
     }
 

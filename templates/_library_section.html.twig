@@ -1,0 +1,24 @@
+{# Library Section - Contains all library-related cards and components #}
+<section class="library-section py-5">
+    <div class="container-fluid" style="max-width: 1600px;">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title mb-4 text-center">
+                    <i class="bi bi-collection me-2"></i>藏书
+                </h2>
+            </div>
+        </div>
+        
+        {# Cards Row - Side by Side #}
+        <div class="row">
+            {% include '_stats_cards.html.twig' %}
+            {% include '_latest_books_card.html.twig' %}
+            {% include '_recently_visited_card.html.twig' %}
+            {% include '_forgotten_book_card.html.twig' %}
+        </div>
+        
+        {# Placeholder for future library-related cards #}
+        {# You can add more library-related components here #}
+        {# Examples: Book categories, Reading progress, Recommendations, etc. #}
+    </div>
+</section>

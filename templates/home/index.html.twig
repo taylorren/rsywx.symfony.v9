@@ -15,10 +15,8 @@
             {{ include('_hero_section.html.twig') }}
             
             <div class="p-4">
-                <div class="row mb-4">
-                    {{ include('_stats_cards.html.twig') }}
-                    {{ include('_latest_books_card.html.twig') }}
-                </div>
+                {# Library Section - Contains stats cards and latest books #}
+                {{ include('_library_section.html.twig') }}
                 
                 <div class="row mt-4">
                     {{ include('_random_discovery.html.twig') }}

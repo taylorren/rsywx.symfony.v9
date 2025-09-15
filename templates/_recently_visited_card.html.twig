@@ -1,6 +1,6 @@
-<!-- Latest Books Card -->
-{% if latest_books is not empty %}
-{% set book = latest_books[0] %}
+<!-- Recently Visited Books Card -->
+{% if recently_visited_books is not empty %}
+{% set book = recently_visited_books[0] %}
 <div class="col-md-3 mb-3">
     <div class="card shadow-sm h-100">
         {% if book.hasCover %}
@@ -11,7 +11,7 @@
             </div>
         {% endif %}
         <div class="card-body d-flex flex-column">
-            <h6 class="card-title text-muted mb-3">最新图书</h6>
+            <h6 class="card-title text-muted mb-3">最近访问</h6>
             <p class="card-text flex-grow-1">
                 <strong><i class="bi bi-book-fill text-primary me-1"></i>{{ book.title }}</strong><br>
                 <small class="text-muted">
@@ -20,11 +20,32 @@
                         <br><i class="bi bi-translate me-1"></i>译者：{{ book.copyrighter }}
                     {% endif %}
                 </small><br>
-                <small class="text-muted"><i class="bi bi-calendar-plus me-1"></i>收录于：{{ book.formattedPurchaseDate }}</small>
+                {% if book.lastVisited %}
+                    <small class="text-muted">
+                        <i class="bi bi-clock me-1"></i>上次访问：{{ book.lastVisited|date('Y-m-d H:i') }}
+                    </small>
+                {% endif %}
             </p>
             <a href="{{ path('book_details', {bookId: book.bookid}) }}" class="btn btn-primary btn-sm mt-auto">
-                <i class="bi bi-book "></i> 浏览详情
+                <i class="bi bi-book"></i> 浏览详情
             </a>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-md-3 mb-3">
+    <div class="card shadow-sm h-100">
+        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+            <i class="bi bi-clock-history text-muted" style="font-size: 3rem;"></i>
+        </div>
+        <div class="card-body d-flex flex-column">
+            <h6 class="card-title text-muted mb-3">最近访问</h6>
+            <p class="card-text flex-grow-1">
+                <small class="text-muted">暂无最近访问的书籍</small>
+            </p>
+            <button class="btn btn-secondary btn-sm mt-auto" disabled>
+                <i class="bi bi-clock-history"></i> 暂无内容
+            </button>
         </div>
     </div>
 </div>

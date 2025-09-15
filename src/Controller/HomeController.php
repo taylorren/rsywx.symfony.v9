@@ -23,26 +23,70 @@ final class HomeController extends AbstractController
     public function index(): Response
     {
         try {
-            // Use the original synchronous methods for now to ensure functionality
-            $stats = $this->apiService->getCollectionStatus();
-            $latestBooks = $this->apiService->getLatestBooks(4);
-            $randomBooks = $this->apiService->getRandomBooks(4);
-            $wordOfTheDay = $this->apiService->getWordOfTheDay();
+            // Define all API requests to be made in parallel
+            $requests = [
+                'stats' => ['method' => 'GET', 'endpoint' => '/books/status'],
+                'latest' => ['method' => 'GET', 'endpoint' => '/books/latest/1'],
+                'random' => ['method' => 'GET', 'endpoint' => '/books/random/4'],
+                'forgotten' => ['method' => 'GET', 'endpoint' => '/books/forgotten/1'],
+                'recent' => ['method' => 'GET', 'endpoint' => '/books/last_visited', 'queryParams' => ['count' => 1]],
+                'wotd' => ['method' => 'GET', 'endpoint' => '/misc/wotd']
+            ];
+
+            // Execute all requests in parallel
+            $responses = $this->apiService->makeParallelRequests($requests);
+
+            // Process all responses
+            $statsData = $this->apiService->processAsyncResponse($responses['stats'], '/books/status');
+            $latestBooksData = $this->apiService->processAsyncResponse($responses['latest'], '/books/latest');
+            $randomBooksData = $this->apiService->processAsyncResponse($responses['random'], '/books/random');
+            $forgottenBooksData = $this->apiService->processAsyncResponse($responses['forgotten'], '/books/forgotten');
+            $recentlyVisitedBooksData = $this->apiService->processAsyncResponse($responses['recent'], '/books/last_visited');
+            $wordOfTheDayData = $this->apiService->processAsyncResponse($responses['wotd'], '/misc/wotd');
+
+            // Convert to DTOs
+            $stats = $statsData && isset($statsData['success']) && $statsData['success'] && isset($statsData['data']) 
+                ? CollectionStats::fromArray($statsData['data']) 
+                : null;
+
+            $latestBooks = $latestBooksData && isset($latestBooksData['success']) && $latestBooksData['success'] && isset($latestBooksData['data']) && is_array($latestBooksData['data'])
+                ? array_map(fn($bookData) => Book::fromArray($bookData), $latestBooksData['data'])
+                : [];
+
+            $randomBooks = $randomBooksData && isset($randomBooksData['success']) && $randomBooksData['success'] && isset($randomBooksData['data']) && is_array($randomBooksData['data'])
+                ? array_map(fn($bookData) => Book::fromArray($bookData), $randomBooksData['data'])
+                : [];
+
+            $forgottenBooks = $forgottenBooksData && isset($forgottenBooksData['success']) && $forgottenBooksData['success'] && isset($forgottenBooksData['data']) && is_array($forgottenBooksData['data'])
+                ? array_map(fn($bookData) => Book::fromArray($bookData), $forgottenBooksData['data'])
+                : [];
+
+            $recentlyVisitedBooks = $recentlyVisitedBooksData && isset($recentlyVisitedBooksData['success']) && $recentlyVisitedBooksData['success'] && isset($recentlyVisitedBooksData['data']) && is_array($recentlyVisitedBooksData['data'])
+                ? array_map(fn($bookData) => Book::fromArray($bookData), $recentlyVisitedBooksData['data'])
+                : [];
+
+            $wordOfTheDay = $wordOfTheDayData && isset($wordOfTheDayData['success']) && $wordOfTheDayData['success'] && isset($wordOfTheDayData['data'])
+                ? WordOfTheDay::fromArray($wordOfTheDayData['data'])
+                : null;
 
             return $this->render('home/index.html.twig', [
                 'stats' => $stats,
                 'latest_books' => $latestBooks,
                 'random_books' => $randomBooks,
+                'forgotten_books' => $forgottenBooks,
+                'recently_visited_books' => $recentlyVisitedBooks,
                 'word_of_the_day' => $wordOfTheDay,
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Failed to load homepage: ' . $e->getMessage());
-            
+
             return $this->render('home/index.html.twig', [
                 'error' => 'Unable to load collection data. Please try again later.',
                 'stats' => null,
                 'latest_books' => [],
                 'random_books' => [],
+                'forgotten_books' => [],
+                'recently_visited_books' => [],
                 'word_of_the_day' => null,
             ]);
         }
@@ -63,7 +107,7 @@ final class HomeController extends AbstractController
     {
         try {
             $stats = $this->apiService->getCollectionStatus();
-            
+
             if (!$stats) {
                 throw new \Exception('Unable to fetch collection statistics');
             }
@@ -73,7 +117,7 @@ final class HomeController extends AbstractController
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Failed to load statistics: ' . $e->getMessage());
-            
+
             return $this->render('home/stats.html.twig', [
                 'error' => 'Unable to load collection statistics. Please try again later.',
                 'stats' => null,

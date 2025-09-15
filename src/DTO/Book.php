@@ -48,12 +48,12 @@ class Book
             bookid: $data['bookid'],
             title: $data['title'],
             author: $data['author'],
-            translated: $data['translated'],
+            translated: (bool) $data['translated'],
             copyrighter: $data['copyrighter'] ?? null,
             region: $data['region'],
             location: $data['location'],
-            purchdate: $data['purchdate'],
-            price: (float) $data['price'],
+            purchdate: $data['purchdate'] ?? $data['last_visited'] ?? '',
+            price: (float) ($data['price'] ?? 0),
             pubdate: $data['pubdate'] ?? null,
             printdate: $data['printdate'] ?? null,
             ver: $data['ver'] ?? null,
@@ -129,5 +129,29 @@ class Book
     public function getTagsString(): string
     {
         return implode(', ', $this->tags);
+    }
+
+    /**
+     * Get friendly description of how long ago the book was last visited
+     */
+    public function getLastVisitDescription(): string
+    {
+        if (!$this->daysSinceVisit) {
+            return '最近';
+        }
+
+        $days = $this->daysSinceVisit;
+        
+        if ($days <= 7) {
+            return '不久以前';
+        } elseif ($days <= 30) {
+            return '几周以前';
+        } elseif ($days <= 90) {
+            return '几个月以前';
+        } elseif ($days <= 365) {
+            return '很久以前';
+        } else {
+            return '好久以前';
+        }
     }
 }

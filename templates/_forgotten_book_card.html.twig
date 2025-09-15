@@ -1,0 +1,57 @@
+<!-- Forgotten Book Card -->
+{% if forgotten_books is not empty %}
+{% set book = forgotten_books[0] %}
+<div class="col-md-3 mb-3">
+    <div class="card shadow-sm h-100">
+        {% if book.hasCover %}
+            <img src="/covers/{{ book.bookid }}.webp" alt="{{ book.title }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+        {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="bi bi-book text-white" style="font-size: 3rem;"></i>
+            </div>
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+            <h6 class="card-title text-muted mb-3">被遗忘的书</h6>
+            <p class="card-text flex-grow-1">
+                <strong><i class="bi bi-book-fill text-warning me-1"></i>{{ book.title }}</strong><br>
+                <small class="text-muted">
+                    <i class="bi bi-person-fill me-1"></i>【{{ book.region }}】{{ book.author }}
+                      {% if book.translated and book.copyrighter %}
+                        <br><i class="bi bi-translate me-1"></i>译者：{{ book.copyrighter }}
+                    {% endif %}
+                </small><br>
+                <small class="text-muted">
+                    {% if book.totalVisits %}
+                        <i class="bi bi-eye-fill me-1"></i>访问次数：{{ book.totalVisits }} 次<br>
+                    {% endif %}
+                    {% if book.lastVisited %}
+                        <i class="bi bi-clock-history me-1"></i>上次访问 
+                        <span class="badge bg-warning text-dark ms-1" title="{{ book.lastVisited|date('Y年m月d日') }}">{{ book.lastVisitDescription }}</span>
+                    {% endif %}
+                </small>
+            </p>
+            <a href="{{ path('book_details', {bookId: book.bookid}) }}" class="btn btn-primary btn-sm mt-auto">
+                <i class="bi bi-eye"></i> 去看看
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+{# Show placeholder when no forgotten books available #}
+<div class="col-md-3 mb-3">
+    <div class="card shadow-sm h-100">
+        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+            <i class="bi bi-book text-white" style="font-size: 3rem;"></i>
+        </div>
+        <div class="card-body d-flex flex-column">
+            <h6 class="card-title text-muted mb-3">被遗忘的书</h6>
+            <p class="card-text flex-grow-1">
+                <small class="text-muted">暂无被遗忘的书籍</small>
+            </p>
+            <button class="btn btn-secondary btn-sm mt-auto" disabled>
+                <i class="bi bi-eye-slash"></i> 暂无内容
+            </button>
+        </div>
+    </div>
+</div>
+{% endif %}
