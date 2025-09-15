@@ -1,0 +1,155 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About - RSYWX Library{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="text-center">
+                <h1 class="display-4 mb-3">About RSYWX Library</h1>
+                <p class="lead text-muted">Your personal book collection management system</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title"><i class="bi bi-info-circle"></i> What is RSYWX Library?</h3>
+                    <p class="card-text">
+                        RSYWX Library is a comprehensive book collection management system designed to help you 
+                        organize, track, and explore your personal library. Whether you're a casual reader or 
+                        a serious book collector, our platform provides the tools you need to manage your collection effectively.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-search"></i> Search & Discovery</h5>
+                    <p class="card-text">
+                        Easily find books in your collection using our powerful search functionality. 
+                        Search by title, author, or keywords to quickly locate any book.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-bar-chart"></i> Statistics & Analytics</h5>
+                    <p class="card-text">
+                        Get insights into your reading habits with detailed statistics about your collection, 
+                        including total books, authors, value, and more.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-shuffle"></i> Random Discovery</h5>
+                    <p class="card-text">
+                        Rediscover books in your collection with our random book feature. 
+                        Perfect for finding your next read or revisiting forgotten favorites.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-clock-history"></i> Reading History</h5>
+                    <p class="card-text">
+                        Track your reading activity with features like recently visited books, 
+                        forgotten books, and books purchased on specific dates.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h4 class="card-title"><i class="bi bi-lightbulb"></i> Word of the Day</h4>
+                    <p class="card-text">
+                        Expand your vocabulary with our daily word feature. Each day brings a new word 
+                        with pronunciation, definition, and examples to enhance your language skills.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="bi bi-gear"></i> Technical Features</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-phone"></i> Responsive Design</h6>
+                            <p class="text-muted small">Works seamlessly on desktop, tablet, and mobile devices</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-lightning"></i> Fast Performance</h6>
+                            <p class="text-muted small">Optimized for speed with efficient data loading and caching</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-shield-check"></i> Reliable API</h6>
+                            <p class="text-muted small">Built on robust API architecture with error handling</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-palette"></i> Modern UI</h6>
+                            <p class="text-muted small">Clean, intuitive interface built with Bootstrap 5</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-search"></i> Advanced Search</h6>
+                            <p class="text-muted small">Powerful search with pagination and filtering options</p>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6><i class="bi bi-graph-up"></i> Data Insights</h6>
+                            <p class="text-muted small">Comprehensive statistics and collection analytics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <h4 class="card-title text-primary">Get Started</h4>
+                    <p class="card-text">
+                        Ready to explore your book collection? Start by browsing your dashboard 
+                        or searching for specific books.
+                    </p>
+                    <div class="btn-group" role="group">
+                        <a href="{{ path('books_dashboard') }}" class="btn btn-primary">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                        <a href="{{ path('books_search') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-search"></i> Search Books
+                        </a>
+                        <a href="{{ path('home_stats') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-bar-chart"></i> View Statistics
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ book ? book.title : 'Book Details' }} - RSYWX Library{% endblock %}
+
+{% block body %}
+<div class="container">
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> {{ error }}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ path('books_dashboard') }}" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    {% elseif book %}
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('books_dashboard') }}">Books</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <!-- Book Cover and Basic Info -->
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="text-center p-4">
+                        {% if book.hasCover %}
+                            <img src="{{ book.coverUri }}" alt="{{ book.title }}" 
+                                 class="img-fluid rounded shadow" style="max-height: 400px;">
+                        {% else %}
+                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center shadow" 
+                                 style="height: 400px; width: 100%;">
+                                <i class="bi bi-book text-white" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-center">{{ book.title }}</h5>
+                        <p class="card-text text-center text-muted">by {{ book.author }}</p>
+                        
+                        <hr>
+                        
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <strong class="text-primary">{{ book.formattedPrice }}</strong>
+                                <br><small class="text-muted">Price</small>
+                            </div>
+                            <div class="col-6">
+                                <strong class="text-success">{{ book.formattedPurchaseDate }}</strong>
+                                <br><small class="text-muted">Purchased</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Book Details -->
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="bi bi-info-circle"></i> Book Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Title</h6>
+                                <p class="mb-0">{{ book.title }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Author</h6>
+                                <p class="mb-0">{{ book.author }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Book ID</h6>
+                                <p class="mb-0"><code>{{ book.bookid }}</code></p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Price</h6>
+                                <p class="mb-0">{{ book.formattedPrice }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Purchase Date</h6>
+                                <p class="mb-0">{{ book.formattedPurchaseDate }}</p>
+                            </div>
+                            {% if book.country %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Country</h6>
+                                <p class="mb-0">{{ book.country }}</p>
+                            </div>
+                            {% endif %}
+                            {% if book.language %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">Language</h6>
+                                <p class="mb-0">{{ book.language }}</p>
+                            </div>
+                            {% endif %}
+                            {% if book.isbn %}
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted mb-1">ISBN</h6>
+                                <p class="mb-0"><code>{{ book.isbn }}</code></p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if book.description %}
+                        <hr>
+                        <h6 class="text-muted mb-2">Description</h6>
+                        <p class="mb-0">{{ book.description }}</p>
+                        {% endif %}
+
+                        {% if book.tags and book.tags is not empty %}
+                        <hr>
+                        <h6 class="text-muted mb-2">Tags</h6>
+                        <div>
+                            {% for tag in book.tags %}
+                                <span class="badge bg-secondary me-1 mb-1">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Actions</h6>
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('books_dashboard') }}" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <a href="{{ path('books_search') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-search"></i> Search More Books
+                            </a>
+                            <a href="{{ path('books_random') }}" class="btn btn-outline-warning">
+                                <i class="bi bi-shuffle"></i> Random Book
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Books Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-collection"></i> Discover More Books</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <i class="bi bi-person display-4 text-primary mb-2"></i>
+                                    <h6>More by {{ book.author }}</h6>
+                                    <p class="text-muted small">Find other books by this author</p>
+                                    <a href="{{ path('books_search', {query: book.author}) }}" class="btn btn-sm btn-outline-primary">
+                                        Search Author
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <i class="bi bi-clock display-4 text-success mb-2"></i>
+                                    <h6>Latest Additions</h6>
+                                    <p class="text-muted small">Recently added books</p>
+                                    <a href="{{ path('books_latest') }}" class="btn btn-sm btn-outline-success">
+                                        View Latest
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <i class="bi bi-shuffle display-4 text-warning mb-2"></i>
+                                    <h6>Random Discovery</h6>
+                                    <p class="text-muted small">Explore something new</p>
+                                    <a href="{{ path('books_random') }}" class="btn btn-sm btn-outline-warning">
+                                        Discover
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RSYWX Library - Home{% endblock %}
+
+{% block body %}
+<div class="container">
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> {{ error }}
+        </div>
+    {% endif %}
+
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="jumbotron bg-primary text-white p-5 rounded">
+                <h1 class="display-4">Welcome to RSYWX Library</h1>
+                <p class="lead">Your personal book collection management system</p>
+                <hr class="my-4">
+                {% if stats %}
+                    <p>Currently managing <strong>{{ stats.totalBooks }}</strong> books from <strong>{{ stats.totalAuthors }}</strong> authors</p>
+                {% endif %}
+                <a class="btn btn-light btn-lg" href="{{ path('books_dashboard') }}" role="button">
+                    <i class="bi bi-book"></i> Browse Collection
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    {% if stats %}
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-book display-4 mb-2"></i>
+                    <h3>{{ stats.totalBooks }}</h3>
+                    <p class="mb-0">Total Books</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-person display-4 mb-2"></i>
+                    <h3>{{ stats.totalAuthors }}</h3>
+                    <p class="mb-0">Authors</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-currency-yen display-4 mb-2"></i>
+                    <h3>{{ stats.formattedTotalValue }}</h3>
+                    <p class="mb-0">Total Value</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stats-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-globe display-4 mb-2"></i>
+                    <h3>{{ stats.totalCountries }}</h3>
+                    <p class="mb-0">Countries</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Latest Books -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clock"></i> Latest Books</h5>
+                    <a href="{{ path('books_latest') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if latest_books is not empty %}
+                        {% for book in latest_books %}
+                            <div class="d-flex mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
+                                <div class="flex-shrink-0">
+                                    {% if book.hasCover %}
+                                        <img src="{{ book.coverUri }}" alt="{{ book.title }}" class="rounded" style="width: 50px; height: 70px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 70px;">
+                                            <i class="bi bi-book text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">
+                                        <a href="{{ path('book_details', {bookId: book.bookid}) }}" class="text-decoration-none">
+                                            {{ book.title }}
+                                        </a>
+                                    </h6>
+                                    <p class="mb-1 text-muted small">{{ book.author }}</p>
+                                    <small class="text-muted">{{ book.formattedPurchaseDate }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No books available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Random Books -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-shuffle"></i> Random Discovery</h5>
+                    <a href="{{ path('books_random') }}" class="btn btn-sm btn-outline-primary">Discover More</a>
+                </div>
+                <div class="card-body">
+                    {% if random_books is not empty %}
+                        {% for book in random_books %}
+                            <div class="d-flex mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
+                                <div class="flex-shrink-0">
+                                    {% if book.hasCover %}
+                                        <img src="{{ book.coverUri }}" alt="{{ book.title }}" class="rounded" style="width: 50px; height: 70px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 70px;">
+                                            <i class="bi bi-book text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">
+                                        <a href="{{ path('book_details', {bookId: book.bookid}) }}" class="text-decoration-none">
+                                            {{ book.title }}
+                                        </a>
+                                    </h6>
+                                    <p class="mb-1 text-muted small">{{ book.author }}</p>
+                                    <small class="text-muted">{{ book.formattedPrice }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No books available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Word of the Day -->
+    {% if word_of_the_day %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card word-of-day">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="bi bi-lightbulb"></i> Word of the Day</h5>
+                    <h3 class="mb-2">{{ word_of_the_day.word }}</h3>
+                    {% if word_of_the_day.pronunciation %}
+                        <p class="mb-2"><em>[{{ word_of_the_day.pronunciation }}]</em></p>
+                    {% endif %}
+                    <p class="card-text">{{ word_of_the_day.definition }}</p>
+                    {% if word_of_the_day.hasExamples %}
+                        <small><strong>Example:</strong> {{ word_of_the_day.firstExample }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+            </div>
+            <div class="modal-body">
+                <p>This is a Bootstrap 5 modal component working perfectly with Symfony AssetMapper!</p>
+                <div class="progress mb-3">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { Tooltip } from 'bootstrap';
+
+// Initialize Bootstrap tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

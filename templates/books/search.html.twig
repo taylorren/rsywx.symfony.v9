@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Search Books - RSYWX Library{% endblock %}
+
+{% block body %}
+<div class="container">
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="bi bi-search"></i> Search Books</h1>
+            <p class="lead">Find books in your collection by title, author, or keyword</p>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" action="{{ path('books_search') }}">
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="query" class="form-label">Search Query</label>
+                                <input type="text" class="form-control" id="query" name="query" 
+                                       value="{{ app.request.query.get('query') }}" 
+                                       placeholder="Enter book title, author, or keyword..." required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="page" class="form-label">Page</label>
+                                <input type="number" class="form-control" id="page" name="page" 
+                                       value="{{ app.request.query.get('page', 1) }}" min="1">
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label for="limit" class="form-label">Per Page</label>
+                                <select class="form-select" id="limit" name="limit">
+                                    <option value="10" {% if app.request.query.get('limit', 10) == 10 %}selected{% endif %}>10</option>
+                                    <option value="20" {% if app.request.query.get('limit', 10) == 20 %}selected{% endif %}>20</option>
+                                    <option value="50" {% if app.request.query.get('limit', 10) == 50 %}selected{% endif %}>50</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                        <a href="{{ path('books_search') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Clear
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    {% if search_result %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Search Results</h3>
+                <span class="badge bg-primary">{{ search_result.totalResults }} results found</span>
+            </div>
+            
+            {% if search_result.hasResults %}
+                <!-- Results Info -->
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> 
+                    Showing {{ search_result.resultRange }} ({{ search_result.formattedSearchTime }})
+                </div>
+
+                <!-- Books Grid -->
+                <div class="row">
+                    {% for book in search_result.books %}
+                    <div class="col-lg-6 col-xl-4 mb-4">
+                        <div class="card h-100 book-card">
+                            <div class="row g-0 h-100">
+                                <div class="col-4">
+                                    {% if book.hasCover %}
+                                        <img src="{{ book.coverUri }}" alt="{{ book.title }}" 
+                                             class="img-fluid rounded-start h-100" style="object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-secondary rounded-start h-100 d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-book text-white display-6"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body d-flex flex-column h-100">
+                                        <h6 class="card-title">
+                                            <a href="{{ path('book_details', {bookId: book.bookid}) }}" 
+                                               class="text-decoration-none stretched-link">
+                                                {{ book.title }}
+                                            </a>
+                                        </h6>
+                                        <p class="card-text text-muted small mb-2">{{ book.author }}</p>
+                                        <div class="mt-auto">
+                                            <small class="text-muted d-block">{{ book.formattedPrice }}</small>
+                                            <small class="text-muted">{{ book.formattedPurchaseDate }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if search_result.hasPagination %}
+                <nav aria-label="Search results pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if search_result.currentPage > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('books_search', {
+                                    query: app.request.query.get('query'),
+                                    page: search_result.currentPage - 1,
+                                    limit: app.request.query.get('limit', 10)
+                                }) }}">
+                                    <i class="bi bi-chevron-left"></i> Previous
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page in 1..search_result.totalPages %}
+                            {% if page == search_result.currentPage %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page }}</span>
+                                </li>
+                            {% elseif page <= search_result.currentPage + 2 and page >= search_result.currentPage - 2 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path('books_search', {
+                                        query: app.request.query.get('query'),
+                                        page: page,
+                                        limit: app.request.query.get('limit', 10)
+                                    }) }}">{{ page }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if search_result.currentPage < search_result.totalPages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('books_search', {
+                                    query: app.request.query.get('query'),
+                                    page: search_result.currentPage + 1,
+                                    limit: app.request.query.get('limit', 10)
+                                }) }}">
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-search"></i> No books found matching your search criteria.
+                    <hr>
+                    <p class="mb-0">Try different keywords or check your spelling.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Search Tips -->
+    {% if not search_result %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Search Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Search by book title: "The Great Gatsby"</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Search by author name: "F. Scott Fitzgerald"</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Use keywords: "classic literature"</li>
+                        <li class="mb-0"><i class="bi bi-check-circle text-success"></i> Partial matches work too: "Gatsby"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

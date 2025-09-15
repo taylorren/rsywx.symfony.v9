@@ -1,0 +1,263 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistics - RSYWX Library{% endblock %}
+
+{% block body %}
+<div class="container">
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> {{ error }}
+        </div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="bi bi-bar-chart"></i> Collection Statistics</h1>
+            <p class="lead">Detailed insights into your book collection</p>
+        </div>
+    </div>
+
+    {% if stats %}
+        <!-- Main Statistics Cards -->
+        <div class="row mb-5">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card text-center border-primary">
+                    <div class="card-body">
+                        <i class="bi bi-book display-3 text-primary mb-3"></i>
+                        <h2 class="text-primary">{{ stats.totalBooks }}</h2>
+                        <h6 class="card-title">Total Books</h6>
+                        <p class="text-muted small">Books in your collection</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card text-center border-success">
+                    <div class="card-body">
+                        <i class="bi bi-person display-3 text-success mb-3"></i>
+                        <h2 class="text-success">{{ stats.totalAuthors }}</h2>
+                        <h6 class="card-title">Authors</h6>
+                        <p class="text-muted small">Unique authors represented</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card text-center border-warning">
+                    <div class="card-body">
+                        <i class="bi bi-currency-yen display-3 text-warning mb-3"></i>
+                        <h2 class="text-warning">{{ stats.formattedTotalValue }}</h2>
+                        <h6 class="card-title">Total Value</h6>
+                        <p class="text-muted small">Combined collection value</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card stats-card text-center border-info">
+                    <div class="card-body">
+                        <i class="bi bi-currency-yen display-3 text-info mb-3"></i>
+                        <h2 class="text-info">{{ stats.formattedAveragePrice }}</h2>
+                        <h6 class="card-title">Average Price</h6>
+                        <p class="text-muted small">Per book average cost</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Statistics -->
+        <div class="row mb-5">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-globe display-4 text-secondary mb-2"></i>
+                        <h3>{{ stats.totalCountries }}</h3>
+                        <h6>Countries</h6>
+                        <p class="text-muted small">Geographic diversity</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-translate display-4 text-secondary mb-2"></i>
+                        <h3>{{ stats.totalLanguages }}</h3>
+                        <h6>Languages</h6>
+                        <p class="text-muted small">Linguistic variety</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <i class="bi bi-calendar-range display-4 text-secondary mb-2"></i>
+                        <h3>{{ stats.collectionSpanYears }}</h3>
+                        <h6>Years Span</h6>
+                        <p class="text-muted small">Collection timeline</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Statistics -->
+        <div class="row mb-5">
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-info-circle"></i> Collection Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-primary">{{ stats.totalBooks }}</h4>
+                                    <small class="text-muted">Total Books</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-success">{{ stats.totalAuthors }}</h4>
+                                    <small class="text-muted">Authors</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-warning">{{ stats.totalCountries }}</h4>
+                                    <small class="text-muted">Countries</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h4 class="text-info">{{ stats.totalLanguages }}</h4>
+                                    <small class="text-muted">Languages</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-currency-yen"></i> Financial Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Total Collection Value:</span>
+                                <strong class="text-primary">{{ stats.formattedTotalValue }}</strong>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Average Book Price:</span>
+                                <strong class="text-success">{{ stats.formattedAveragePrice }}</strong>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Books per Author:</span>
+                                <strong class="text-info">{{ stats.averageBooksPerAuthor }}</strong>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Collection Span:</span>
+                                <strong class="text-warning">{{ stats.collectionSpanYears }} years</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bars -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Collection Metrics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Books</span>
+                                <span class="badge bg-primary">{{ stats.totalBooks }}</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-primary" role="progressbar" 
+                                     style="width: {{ (stats.totalBooks / (stats.totalBooks > 0 ? stats.totalBooks : 1)) * 100 }}%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Authors</span>
+                                <span class="badge bg-success">{{ stats.totalAuthors }}</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ stats.totalBooks > 0 ? (stats.totalAuthors / stats.totalBooks) * 100 : 0 }}%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Countries</span>
+                                <span class="badge bg-warning">{{ stats.totalCountries }}</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     style="width: {{ stats.totalBooks > 0 ? (stats.totalCountries / stats.totalBooks) * 100 : 0 }}%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Languages</span>
+                                <span class="badge bg-info">{{ stats.totalLanguages }}</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-info" role="progressbar" 
+                                     style="width: {{ stats.totalBooks > 0 ? (stats.totalLanguages / stats.totalBooks) * 100 : 0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info text-center" role="alert">
+                    <i class="bi bi-info-circle display-4 mb-3"></i>
+                    <h4>No Statistics Available</h4>
+                    <p class="mb-3">Unable to load collection statistics at this time.</p>
+                    <a href="{{ path('books_dashboard') }}" class="btn btn-primary">
+                        <i class="bi bi-speedometer2"></i> Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="card-title">Explore Your Collection</h6>
+                    <div class="btn-group" role="group">
+                        <a href="{{ path('books_dashboard') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                        <a href="{{ path('books_search') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-search"></i> Search Books
+                        </a>
+                        <a href="{{ path('books_latest') }}" class="btn btn-outline-success">
+                            <i class="bi bi-clock"></i> Latest Books
+                        </a>
+                        <a href="{{ path('books_random') }}" class="btn btn-outline-warning">
+                            <i class="bi bi-shuffle"></i> Random Books
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
