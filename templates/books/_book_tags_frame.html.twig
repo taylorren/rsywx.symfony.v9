@@ -1,0 +1,17 @@
+<turbo-frame id="book-tags-{{ book.bookid }}">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0"><i class="bi bi-tags"></i> 标签</h6>
+        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTagsModal">
+            <i class="bi bi-plus-circle"></i> 添加标签
+        </button>
+    </div>
+    <div class="mb-3">
+        {% if book and book.tags is not empty %}
+            {% for tag in book.tags %}
+                <span class="badge bg-secondary me-1 mb-1">{{ tag }}</span>
+            {% endfor %}
+        {% else %}
+            <span class="text-muted">暂无标签</span>
+        {% endif %}
+    </div>
+</turbo-frame>

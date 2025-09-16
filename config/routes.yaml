@@ -49,7 +49,22 @@ books_today:
         date: '\d+'
 
 book_details:
-    path: /books/{bookId}
+    path: /books/{bookId}.html
     controller: App\Controller\BookController::details
+    requirements:
+        bookId: '.+'
+
+# API routes
+api_add_tags:
+    path: /api/books/{bookId}/tags
+    controller: App\Controller\ApiController::addTagsToBook
+    methods: [POST]
+    requirements:
+        bookId: '.+'
+
+# Turbo frame routes
+book_tags_frame:
+    path: /books/{bookId}/tags-frame
+    controller: App\Controller\BookController::bookTags
     requirements:
         bookId: '.+'

@@ -90,7 +90,7 @@ class RsywxApiService
     }
 
     /**
-     * Make multiple parallel requests and wait for all to complete
+     * Make multiple parallel requests and wait for all to complete using true parallelism
      */
     public function makeParallelRequests(array $requests): array
     {
@@ -106,10 +106,18 @@ class RsywxApiService
             );
         }
         
-        // Wait for all responses to complete
+        // Use Symfony's stream() method for true parallel processing
         $results = [];
-        foreach ($responses as $key => $response) {
-            $results[$key] = $response;
+        foreach ($this->httpClient->stream($responses) as $response => $chunk) {
+            if ($chunk->isLast()) {
+                // Find the key for this response
+                $key = array_search($response, $responses, true);
+                if ($key !== false) {
+                    // Get the endpoint from the response info for logging
+                    $endpoint = $response->getInfo('url') ?? 'unknown';
+                    $results[$key] = $this->processAsyncResponse($response, $endpoint);
+                }
+            }
         }
         
         return $results;
@@ -180,10 +188,16 @@ class RsywxApiService
     public function getBookDetails(string $bookId, bool $refresh = false): ?Book
     {
         try {
-            $data = $this->makeRequestWithRetry('GET', "/books/{$bookId}", [
+            $response = $this->makeRequestWithRetry('GET', "/books/{$bookId}", [
                 'refresh' => $refresh
             ]);
-            return $data ? Book::fromArray($data) : null;
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data'])) {
+                return Book::fromArray($response['data']);
+            }
+            
+            return null;
         } catch (\Exception $e) {
             $this->logger->error('Failed to get book details', [
                 'bookId' => $bookId,

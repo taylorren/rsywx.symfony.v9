@@ -244,4 +244,30 @@ class BookController extends AbstractController
             ]);
         }
     }
+
+    /**
+     * Get book tags for Turbo frame updates
+     */
+    public function bookTags(string $bookId, Request $request): Response
+    {
+        try {
+            // Check if refresh is requested to bypass cache
+            $refresh = $request->query->getBoolean('refresh', false);
+            $book = $this->apiService->getBookDetails($bookId, $refresh);
+            
+            if (!$book) {
+                throw new \Exception('Book not found');
+            }
+            
+            return $this->render('books/_book_tags_frame.html.twig', [
+                'book' => $book,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load book tags: ' . $e->getMessage());
+            
+            return $this->render('books/_book_tags_frame.html.twig', [
+                'book' => null,
+            ]);
+        }
+    }
 }

@@ -30,20 +30,20 @@ final class HomeController extends AbstractController
                 'latest' => ['method' => 'GET', 'endpoint' => '/books/latest/1'],
                 'random' => ['method' => 'GET', 'endpoint' => '/books/random/4'],
                 'forgotten' => ['method' => 'GET', 'endpoint' => '/books/forgotten/1'],
-                'recent' => ['method' => 'GET', 'endpoint' => '/books/last_visited', 'queryParams' => ['count' => 1]],
+                'recent' => ['method' => 'GET', 'endpoint' => '/books/last_visited/1'],
                 'wotd' => ['method' => 'GET', 'endpoint' => '/misc/wotd']
             ];
 
             // Execute all requests in parallel
             $responses = $this->apiService->makeParallelRequests($requests);
 
-            // Process all responses
-            $statsData = $this->apiService->processAsyncResponse($responses['stats'], '/books/status');
-            $latestBooksData = $this->apiService->processAsyncResponse($responses['latest'], '/books/latest');
-            $randomBooksData = $this->apiService->processAsyncResponse($responses['random'], '/books/random');
-            $forgottenBooksData = $this->apiService->processAsyncResponse($responses['forgotten'], '/books/forgotten');
-            $recentlyVisitedBooksData = $this->apiService->processAsyncResponse($responses['recent'], '/books/last_visited');
-            $wordOfTheDayData = $this->apiService->processAsyncResponse($responses['wotd'], '/misc/wotd');
+            // Responses are now already processed arrays, not ResponseInterface objects
+            $statsData = $responses['stats'];
+            $latestBooksData = $responses['latest'];
+            $randomBooksData = $responses['random'];
+            $forgottenBooksData = $responses['forgotten'];
+            $recentlyVisitedBooksData = $responses['recent'];
+            $wordOfTheDayData = $responses['wotd'];
 
             // Convert to DTOs
             $stats = $statsData && isset($statsData['success']) && $statsData['success'] && isset($statsData['data']) 
