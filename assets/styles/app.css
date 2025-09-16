@@ -223,6 +223,116 @@ img {
     color: var(--text-secondary) !important;
 }
 
+/* Simple table styles */
+.simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.simple-table th {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--border-color);
+    font-weight: 600;
+}
+
+.simple-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.simple-table tr:nth-child(even) {
+    background-color: var(--bg-secondary);
+}
+
+.simple-table tr:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.simple-table a {
+    color: var(--btn-outline-text);
+    text-decoration: none;
+}
+
+.simple-table a:hover {
+    color: var(--btn-primary-bg);
+    text-decoration: underline;
+}
+
+/* Themed table styles */
+.themed-table {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.themed-table thead th {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+
+.themed-table tbody tr {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.themed-table tbody tr:nth-child(odd) {
+    background-color: var(--bg-secondary) !important;
+}
+
+.themed-table tbody tr:hover {
+    background-color: var(--bg-tertiary) !important;
+}
+
+.themed-table td, .themed-table th {
+    border-color: var(--border-color) !important;
+}
+
+.themed-table a {
+    color: var(--btn-outline-text) !important;
+    text-decoration: none;
+}
+
+.themed-table a:hover {
+    color: var(--btn-primary-bg) !important;
+    text-decoration: underline;
+}
+
+/* Themed pagination styles */
+.themed-pagination .page-link {
+    background-color: var(--card-bg) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.themed-pagination .page-item.active .page-link {
+    background-color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+    color: var(--btn-primary-text) !important;
+}
+
+.themed-pagination .page-link:hover {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--btn-primary-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.themed-pagination .page-item.disabled .page-link {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-muted) !important;
+    border-color: var(--border-color) !important;
+}
+
 /* Smooth transitions for theme switching */
 * {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;

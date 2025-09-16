@@ -48,6 +48,16 @@ books_today:
         month: '\d+'
         date: '\d+'
 
+books_list:
+    path: /books/list/{key}/{value}/{page}
+    controller: App\Controller\BookController::listFiltered
+    defaults:
+        key: 'title'
+        value: '-'
+        page: 1
+    requirements:
+        page: '\d+'
+
 book_details:
     path: /books/{bookId}.html
     controller: App\Controller\BookController::details

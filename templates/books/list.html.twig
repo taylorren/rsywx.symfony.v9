@@ -1,188 +1,169 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ page_title }} - RSYWX Library{% endblock %}
+{% block title %}
+	{{ page_title ?? 'Books List' }}
+	- RSYWX Library
+{% endblock %}
 
 {% block body %}
-<div class="container">
-    {% if error %}
-        <div class="alert alert-danger" role="alert">
-            <i class="bi bi-exclamation-triangle"></i> {{ error }}
-        </div>
-    {% endif %}
+	<div class="container mt-4">
+		<div class="row mb-4">
+			<div class="col-12">
+				<h1>
+					<i class="{{ page_icon ?? 'bi bi-book' }}"></i>
+					{{ page_title ?? 'Books List' }}</h1>
+				<p class="lead">{{ page_description ?? 'Browse our collection of books' }}</p>
+			</div>
+		</div>
 
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1><i class="{{ page_icon }}"></i> {{ page_title }}</h1>
-            <p class="lead">{{ page_description }}</p>
-        </div>
-    </div>
+		{% if books is not empty %}
+			<!-- Books Count -->
+			<div class="row mb-3">
+				<div class="col-12">
+					<div class="d-flex justify-content-between align-items-center">
+						<span class="text-muted">
 
-    {% if books is not empty %}
-        <!-- Books Count -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted">{{ books|length }} book{{ books|length != 1 ? 's' : '' }} found</span>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <input type="radio" class="btn-check" name="view-mode" id="grid-view" autocomplete="off" checked>
-                        <label class="btn btn-outline-secondary" for="grid-view">
-                            <i class="bi bi-grid-3x3-gap"></i> Grid
-                        </label>
-                        <input type="radio" class="btn-check" name="view-mode" id="list-view" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="list-view">
-                            <i class="bi bi-list"></i> List
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
+							第{{ pagination.current_page }}页 / 总{{ pagination.total_pages }}页
 
-        <!-- Grid View -->
-        <div id="grid-container" class="row">
-            {% for book in books %}
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card h-100 book-card">
-                    <div class="row g-0 h-100">
-                        <div class="col-4">
-                            {% if book.hasCover %}
-                                <img src="/covers/{{ book.bookid }}.webp" alt="{{ book.title }}" 
-                                     class="img-fluid rounded-start h-100" style="object-fit: cover;">
-                            {% else %}
-                                <div class="bg-secondary rounded-start h-100 d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-book text-white display-6"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="col-8">
-                            <div class="card-body d-flex flex-column h-100">
-                                <h6 class="card-title">
-                                    <a href="{{ path('book_details', {bookId: book.bookid}) }}" 
-                                       class="text-decoration-none stretched-link">
-                                        {{ book.title|length > 50 ? book.title|slice(0, 50) ~ '...' : book.title }}
-                                    </a>
-                                </h6>
-                                <p class="card-text text-muted small mb-2">
-                                    {{ book.author|length > 30 ? book.author|slice(0, 30) ~ '...' : book.author }}
-                                </p>
-                                <div class="mt-auto">
-                                    <small class="text-muted d-block">{{ book.formattedPrice }}</small>
-                                    <small class="text-muted">{{ book.formattedPurchaseDate }}</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
+						</span>
+					</div>
+				</div>
+			</div>
 
-        <!-- List View -->
-        <div id="list-container" class="d-none">
-            <div class="card">
-                <div class="list-group list-group-flush">
-                    {% for book in books %}
-                    <div class="list-group-item list-group-item-action">
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                {% if book.hasCover %}
-                                    <img src="/covers/{{ book.bookid }}.webp" alt="{{ book.title }}" 
-                                         class="rounded" style="width: 60px; height: 80px; object-fit: cover;">
-                                {% else %}
-                                    <div class="bg-secondary rounded d-flex align-items-center justify-content-center" 
-                                         style="width: 60px; height: 80px;">
-                                        <i class="bi bi-book text-white"></i>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="col">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <a href="{{ path('book_details', {bookId: book.bookid}) }}" 
-                                           class="text-decoration-none">
-                                            {{ book.title }}
-                                        </a>
-                                    </h6>
-                                    <small class="text-muted">{{ book.formattedPrice }}</small>
-                                </div>
-                                <p class="mb-1 text-muted">{{ book.author }}</p>
-                                <small class="text-muted">Purchased: {{ book.formattedPurchaseDate }}</small>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    {% else %}
-        <div class="row">
-            <div class="col-12">
-                <div class="alert alert-info text-center" role="alert">
-                    <i class="bi bi-info-circle display-4 mb-3"></i>
-                    <h4>No Books Found</h4>
-                    <p class="mb-3">{{ empty_message|default('No books match the current criteria.') }}</p>
-                    <div class="btn-group" role="group">
-                        <a href="{{ path('books_dashboard') }}" class="btn btn-primary">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                        <a href="{{ path('books_search') }}" class="btn btn-outline-primary">
-                            <i class="bi bi-search"></i> Search Books
-                        </a>
-                        <a href="{{ path('books_random') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-shuffle"></i> Random Books
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+			<!-- Books List -->
+			<div class="row">
+				<div class="col-12">
+					<table class="simple-table">
+						<thead>
+							<tr>
+								<th>书籍编号</th>
+								<th>书名</th>
+								<th>作者</th>
+								<th>位置</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for book in books %}
+								<tr>
+									<td>{{ book.bookid }}</td>
+									<td>
+										<a href="{{ path('book_details', {bookId: book.bookid}) }}" title="{{ book.title }}">
+											{{ book.title }}
+										</a>
+									</td>
+									<td title="{{ book.author }}">
+										<a href="{{ path('books_list', {key: 'author', value: book.author}) }}">
+											{{ book.author }}
+										</a>
+									</td>
+									<td title="{{ book.location }}">{{ book.location }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
 
-    <!-- Navigation -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h6 class="card-title">Explore More</h6>
-                    <div class="btn-group" role="group">
-                        <a href="{{ path('books_dashboard') }}" class="btn btn-outline-primary">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                        <a href="{{ path('books_search') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-search"></i> Search
-                        </a>
-                        <a href="{{ path('books_latest') }}" class="btn btn-outline-success">
-                            <i class="bi bi-clock"></i> Latest
-                        </a>
-                        <a href="{{ path('books_random') }}" class="btn btn-outline-warning">
-                            <i class="bi bi-shuffle"></i> Random
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+			<!-- Pagination -->
+			{% if pagination and pagination.total_pages > 1 %}
+				<div class="row mt-4">
+					<div class="col-12">
+						<nav aria-label="Books pagination">
+							<ul class="pagination justify-content-center themed-pagination">
+								<!-- First Page -->
+								{% if pagination.current_page > 1 %}
+									<li class="page-item">
+										<a class="page-link" href="{{ path('books_list', {key: searchKey, value: searchValue, page: 1}) }}">
+											<i class="bi bi-chevron-double-left"></i>
+											首页
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">
+											<i class="bi bi-chevron-double-left"></i>
+											首页</span>
+									</li>
+								{% endif %}
 
-<script>
-// View mode toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const gridView = document.getElementById('grid-view');
-    const listView = document.getElementById('list-view');
-    const gridContainer = document.getElementById('grid-container');
-    const listContainer = document.getElementById('list-container');
+								<!-- Previous Page -->
+								{% if pagination.current_page > 1 %}
+									<li class="page-item">
+										<a class="page-link" href="{{ path('books_list', {key: searchKey, value: searchValue, page: pagination.current_page - 1}) }}">
+											<i class="bi bi-chevron-left"></i>
+											前一页
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">
+											<i class="bi bi-chevron-left"></i>
+											前一页</span>
+									</li>
+								{% endif %}
 
-    gridView.addEventListener('change', function() {
-        if (this.checked) {
-            gridContainer.classList.remove('d-none');
-            listContainer.classList.add('d-none');
-        }
-    });
 
-    listView.addEventListener('change', function() {
-        if (this.checked) {
-            gridContainer.classList.add('d-none');
-            listContainer.classList.remove('d-none');
-        }
-    });
-});
-</script>
+								<!-- Next Page -->
+								{% if pagination.current_page < pagination.total_pages %}
+									<li class="page-item">
+										<a class="page-link" href="{{ path('books_list', {key: searchKey, value: searchValue, page: pagination.current_page + 1}) }}">
+											后一页
+											<i class="bi bi-chevron-right"></i>
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">后一页
+											<i class="bi bi-chevron-right"></i>
+										</span>
+									</li>
+								{% endif %}
+
+								<!-- Last Page -->
+								{% if pagination.current_page < pagination.total_pages %}
+									<li class="page-item">
+										<a class="page-link" href="{{ path('books_list', {key: searchKey, value: searchValue, page: pagination.total_pages}) }}">
+											末页
+											<i class="bi bi-chevron-double-right"></i>
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">末页
+											<i class="bi bi-chevron-double-right"></i>
+										</span>
+									</li>
+								{% endif %}
+							</ul>
+						</nav>
+					</div>
+				</div>
+			{% endif %}
+
+		{% else %}
+			<!-- No Books Found -->
+			<div class="row">
+				<div class="col-12">
+					<div class="alert alert-info text-center" role="alert">
+						<i class="bi bi-info-circle display-4 mb-3"></i>
+						<h4>No Books Found</h4>
+						<p class="mb-3">{{ empty_message|default('No books match the current criteria.') }}</p>
+						<div class="btn-group" role="group">
+							<a href="{{ path('books_dashboard') }}" class="btn btn-primary">
+								<i class="bi bi-speedometer2"></i>
+								Dashboard
+							</a>
+							<a href="{{ path('books_search') }}" class="btn btn-outline-primary">
+								<i class="bi bi-search"></i>
+								Search Books
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+
+		<!-- Navigation -->
+
+	</div>
 {% endblock %}

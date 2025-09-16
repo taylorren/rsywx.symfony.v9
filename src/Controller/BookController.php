@@ -2,13 +2,14 @@
 
 namespace App\Controller;
 
-use App\Service\RsywxApiService;
 use App\DTO\Book;
+use App\Service\RsywxApiService;
 use App\DTO\CollectionStats;
 use App\DTO\WordOfTheDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Psr\Log\LoggerInterface;
 
 class BookController extends AbstractController
@@ -269,5 +270,106 @@ class BookController extends AbstractController
                 'book' => null,
             ]);
         }
+    }
+
+    /**
+     * Display filtered book list with key-value search and pagination
+     */
+    public function listFiltered(string $key='title', string $value='-', int $page = 1): Response
+    {
+        try {
+            // Call API service to get filtered books using existing endpoint
+            $result = $this->apiService->getBooksList($key, $value, $page);
+            
+            if (!$result) {
+                // Return empty result page instead of error
+                return $this->render('books/list.html.twig', [
+                    'books' => [],
+                    'pagination' => null,
+                    'searchKey' => $key,
+                    'searchValue' => $value,
+                    'currentPage' => $page,
+                    'page_title' => $this->getSearchTitle($key, $value),
+                    'page_description' => $this->getSearchDescription($key, $value),
+                    'page_icon' => 'bi bi-search',
+                    'no_results' => true
+                ]);
+            }
+
+            return $this->render('books/list.html.twig', [
+                'books' => $this->convertToBooksArray($result['data'] ?? []),
+                'pagination' => $result['pagination'] ?? null,
+                'searchKey' => $key,
+                'searchValue' => $value,
+                'currentPage' => $page,
+                'page_title' => $this->getSearchTitle($key, $value),
+                'page_description' => $this->getSearchDescription($key, $value),
+                'page_icon' => 'bi bi-search'
+            ]);
+        } catch (NotFoundHttpException $e) {
+            // Re-throw 404 exceptions
+            throw $e;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load filtered books', [
+                'key' => $key,
+                'value' => $value,
+                'page' => $page,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            throw new NotFoundHttpException('Unable to load book list at this time');
+        }
+    }
+
+    private function convertToBooksArray(array $booksData): array
+    {
+        $books = [];
+        foreach ($booksData as $bookData) {
+            $books[] = Book::fromArray($bookData);
+        }
+        return $books;
+    }
+
+    private function getSearchTitle(string $key, string $value): string
+    {
+        if ($value === '-') {
+            return match($key) {
+                'title' => '所有书籍（按ID排序）',
+                'author' => '所有书籍（按作者）',
+                'tag' => '所有书籍（按标签）',
+                'misc' => '所有书籍（按其他）',
+                default => '所有书籍'
+            };
+        }
+
+        return match($key) {
+            'title' => "标题包含「{$value}」的书籍",
+            'author' => "作者包含「{$value}」的书籍",
+            'tag' => "标签包含「{$value}」的书籍",
+            'misc' => "其他信息包含「{$value}」的书籍",
+            default => "搜索结果"
+        };
+    }
+
+    private function getSearchDescription(string $key, string $value): string
+    {
+        if ($value === '-') {
+            return match($key) {
+                'title' => '显示所有书籍，按ID降序排列',
+                'author' => '显示所有书籍，按作者分组',
+                'tag' => '显示所有书籍，按标签分组',
+                'misc' => '显示所有书籍，按其他信息分组',
+                default => '显示所有书籍'
+            };
+        }
+
+        return match($key) {
+            'title' => "搜索标题中包含「{$value}」的书籍",
+            'author' => "搜索作者中包含「{$value}」的书籍",
+            'tag' => "搜索标签中包含「{$value}」的书籍",
+            'misc' => "搜索其他信息中包含「{$value}」的书籍",
+            default => "搜索结果"
+        };
     }
 }

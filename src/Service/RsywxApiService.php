@@ -447,6 +447,16 @@ class RsywxApiService
      */
     private function makeRequest(string $method, string $endpoint, array $queryParams = [], array $body = []): array
     {
+        $fullUrl = $this->baseUrl . $endpoint;
+        
+        $this->logger->info('Making API Request', [
+            'method' => $method,
+            'endpoint' => $endpoint,
+            'full_url' => $fullUrl,
+            'base_url' => $this->baseUrl,
+            'query_params' => $queryParams
+        ]);
+        
         try {
             $options = [
                 'headers' => [
@@ -474,12 +484,18 @@ class RsywxApiService
 
             $response = $this->httpClient->request(
                 $method,
-                $this->baseUrl . $endpoint,
+                $fullUrl,
                 $options
             );
 
             $statusCode = $response->getStatusCode();
             $content = $response->toArray();
+
+            $this->logger->info('API Response Received', [
+                'endpoint' => $endpoint,
+                'status_code' => $statusCode,
+                'response_size' => strlen(json_encode($content))
+            ]);
 
             if ($statusCode >= 400) {
                 $this->logger->error('RSYWX API Error', [
@@ -496,10 +512,50 @@ class RsywxApiService
         } catch (\Exception $e) {
             $this->logger->error('RSYWX API Request Failed', [
                 'endpoint' => $endpoint,
-                'error' => $e->getMessage()
+                'full_url' => $fullUrl,
+                'error' => $e->getMessage(),
+                'error_class' => get_class($e)
             ]);
             
             throw $e;
+        }
+    }
+
+    /**
+     * Get books list with filtering and pagination
+     */
+    public function getBooksList(string $type = 'title', string $value = '-', int $page = 1): ?array
+    {
+        // Construct endpoint directly: /books/list/{type}/{value}/{page}
+        $endpoint = "/books/list/{$type}/" . $value . "/{$page}";
+        
+        // Debug output to see the final endpoint
+        $this->logger->info('API Endpoint Debug', [
+            'endpoint' => $endpoint,
+            'type' => $type,
+            'value' => $value,
+            'page' => $page
+        ]);
+
+        try {
+            $response = $this->makeRequestWithRetry('GET', $endpoint);
+            
+            // Return the full response structure including data and pagination
+            if ($response && isset($response['success']) && $response['success']) {
+                return $response;
+            }
+            
+            return null;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get books list', [
+                'type' => $type,
+                'value' => $value,
+                'page' => $page,
+                'endpoint' => $endpoint,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
         }
     }
 }
