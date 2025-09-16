@@ -31,7 +31,9 @@ final class HomeController extends AbstractController
                 'random' => ['method' => 'GET', 'endpoint' => '/books/random/4'],
                 'forgotten' => ['method' => 'GET', 'endpoint' => '/books/forgotten/1'],
                 'recent' => ['method' => 'GET', 'endpoint' => '/books/last_visited/1'],
-                'wotd' => ['method' => 'GET', 'endpoint' => '/misc/wotd']
+                'wotd' => ['method' => 'GET', 'endpoint' => '/misc/wotd'],
+                'reading_summary' => ['method' => 'GET', 'endpoint' => '/readings/summary'],
+                'latest_readings' => ['method' => 'GET', 'endpoint' => '/readings/latest/10']
             ];
 
             // Execute all requests in parallel
@@ -44,6 +46,8 @@ final class HomeController extends AbstractController
             $forgottenBooksData = $responses['forgotten'];
             $recentlyVisitedBooksData = $responses['recent'];
             $wordOfTheDayData = $responses['wotd'];
+            $readingSummaryData = $responses['reading_summary'];
+            $latestReadingsData = $responses['latest_readings'];
 
             // Convert to DTOs
             $stats = $statsData && isset($statsData['success']) && $statsData['success'] && isset($statsData['data']) 
@@ -70,6 +74,15 @@ final class HomeController extends AbstractController
                 ? WordOfTheDay::fromArray($wordOfTheDayData['data'])
                 : null;
 
+            // Process reading data
+            $readingSummary = $readingSummaryData && isset($readingSummaryData['success']) && $readingSummaryData['success'] && isset($readingSummaryData['data'])
+                ? $readingSummaryData['data']
+                : null;
+
+            $latestReadings = $latestReadingsData && isset($latestReadingsData['success']) && $latestReadingsData['success'] && isset($latestReadingsData['data']) && is_array($latestReadingsData['data'])
+                ? $latestReadingsData['data']
+                : [];
+
             return $this->render('home/index.html.twig', [
                 'stats' => $stats,
                 'latest_books' => $latestBooks,
@@ -77,6 +90,8 @@ final class HomeController extends AbstractController
                 'forgotten_books' => $forgottenBooks,
                 'recently_visited_books' => $recentlyVisitedBooks,
                 'word_of_the_day' => $wordOfTheDay,
+                'readingSummary' => $readingSummary,
+                'latestReadings' => $latestReadings,
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Failed to load homepage: ' . $e->getMessage());
@@ -89,6 +104,8 @@ final class HomeController extends AbstractController
                 'forgotten_books' => [],
                 'recently_visited_books' => [],
                 'word_of_the_day' => null,
+                'readingSummary' => null,
+                'latestReadings' => [],
             ]);
         }
     }

@@ -1,0 +1,55 @@
+<!-- Latest Reading Card -->
+{% if latestReadings is not empty %}
+{% set latestReading = latestReadings[0] %}
+<div class="col-md-6 mb-3">
+    <div class="card shadow-sm h-100">
+        {% if latestReading.feature is defined and latestReading.feature %}
+            <img src="{{ latestReading.feature }}" class="card-img-top" alt="最新阅读" style="height: 200px; object-fit: cover;">
+        {% else %}
+            <img src="/images/reading.png" class="card-img-top" alt="最新阅读" style="height: 200px; object-fit: cover;">
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+            <h6 class="card-title text-muted mb-2">
+                <i class="bi bi-clock-history me-2"></i>最新阅读
+            </h6>
+            <h5 class="card-text mb-2">
+                <i class="bi bi-book text-primary me-1"></i>
+                {% if latestReading.bookid is defined %}
+                    <a href="{{ path('book_details', {bookId: latestReading.bookid}) }}" class="text-decoration-none">{{ latestReading.book_title|default('未知书籍') }}</a>
+                {% else %}
+                    {{ latestReading.book_title|default('未知书籍') }}
+                {% endif %}
+            </h5>
+            {% if latestReading.title is defined %}
+                <p class="card-text text-muted mb-2">
+                    <i class="bi bi-chat-square-text me-1"></i>
+                    {% if latestReading.uri is defined %}
+                        <a href="{{ latestReading.uri }}" class="text-decoration-none text-muted" target="_blank">{{ latestReading.title }} <i class="bi bi-box-arrow-up-right"></i></a>
+                    {% else %}
+                        {{ latestReading.title }}
+                    {% endif %}
+                </p>
+            {% endif %}
+            {% if latestReading.datein is defined %}
+                <p class="card-text">
+                    <small class="text-muted">
+                        <i class="bi bi-calendar me-1"></i>{{ latestReading.datein|date('Y年m月d日') }}
+                    </small>
+                </p>
+            {% endif %}
+            
+            <div class="d-flex justify-content-center mt-auto">
+                {% if latestReading.uri is defined %}
+                    <a href="{{ latestReading.uri }}" class="btn btn-primary btn-sm" target="_blank">
+                        <i class="bi bi-eye"></i> 查看详情 <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                {% else %}
+                    <a href="/readings" class="btn btn-primary btn-sm">
+                        <i class="bi bi-eye"></i> 查看详情
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,18 @@
+{# Readings Section - Contains reading statistics and latest reading activities #}
+<section class="readings-section py-5">
+    <div class="container-fluid" style="max-width: 1600px;">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title mb-4 text-center">
+                    <i class="bi bi-book-half me-2"></i>阅读
+                </h2>
+            </div>
+        </div>
+        
+        {# Cards Row - Side by Side #}
+        <div class="row">
+            {% include '_reading_stats_card.html.twig' %}
+            {% include '_latest_readings_card.html.twig' %}
+        </div>
+    </div>
+</section>

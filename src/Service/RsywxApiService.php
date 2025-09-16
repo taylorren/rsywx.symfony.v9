@@ -443,6 +443,57 @@ class RsywxApiService
     }
 
     /**
+     * Get reading summary statistics
+     */
+    public function getReadingSummary(bool $refresh = false): ?array
+    {
+        try {
+            $response = $this->makeRequestWithRetry('GET', '/readings/summary', [
+                'refresh' => $refresh
+            ]);
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data'])) {
+                return $response['data'];
+            }
+            
+            return null;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get reading summary', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Get latest reading activities
+     */
+    public function getLatestReadings(int $count = 5, bool $refresh = false): array
+    {
+        try {
+            $response = $this->makeRequestWithRetry('GET', "/readings/latest/{$count}", [
+                'refresh' => $refresh
+            ]);
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return $response['data'];
+            }
+            
+            return [];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get latest readings', [
+                'count' => $count,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
+    }
+
+    /**
      * Make HTTP request to the API
      */
     private function makeRequest(string $method, string $endpoint, array $queryParams = [], array $body = []): array

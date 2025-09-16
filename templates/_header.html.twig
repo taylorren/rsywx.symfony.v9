@@ -13,23 +13,31 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('app_home') }}">首页</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('books_dashboard') }}">图书</a>
-                </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        浏览
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ path('books_latest') }}">最新图书</a></li>
-                        <li><a class="dropdown-item" href="{{ path('books_random') }}">随机图书</a></li>
-                        <li><a class="dropdown-item" href="{{ path('books_recent') }}">最近访问</a></li>
-                        <li><a class="dropdown-item" href="{{ path('books_forgotten') }}">遗忘图书</a></li>
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdown">图书馆</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{{ path('books_latest') }}">藏书总目</a></li>
+                        <li><a class="dropdown-item" href="{{ path('books_random') }}">今日藏书</a></li>
+                        <li><a class="dropdown-item" href="{{ path('books_recent') }}">手气不错</a></li>
+                        <li><a class="dropdown-item" href="{{ path('books_forgotten') }}">访问记录</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('stats') }}">统计</a>
+                    <a class="nav-link" href="#">
+                        读书
+                    </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://blog.rsywx.net" target="_blank">
+                        博客 <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://rsywx.com" target="_blank">
+                        维客 <i class="bi bi-box-arrow-up-right"></i>
+                    </a>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('about') }}">关于</a>
                 </li>
