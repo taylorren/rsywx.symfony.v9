@@ -167,9 +167,8 @@ class BookController extends AbstractController
     public function lucky(Request $request): Response
     {
         try {
-            $refresh = $request->query->getBoolean('refresh', false);
-            
-            $books = $this->apiService->getRandomBooks(9, $refresh);
+            // Always force refresh for random books to ensure new results each time
+            $books = $this->apiService->getRandomBooks(9, true);
 
             return $this->render('books/lucky.html.twig', [
                 'title' => '手气不错',
