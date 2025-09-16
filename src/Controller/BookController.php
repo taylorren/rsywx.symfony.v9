@@ -10,13 +10,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 
 class BookController extends AbstractController
 {
     public function __construct(
         private RsywxApiService $apiService,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private HttpClientInterface $httpClient
     ) {}
 
     /**
@@ -136,10 +138,9 @@ class BookController extends AbstractController
     /**
      * Display random books
      */
-    public function random(Request $request): Response
+    public function random(Request $request, int $count = 1): Response
     {
         try {
-            $count = $request->query->getInt('count', 20);
             $refresh = $request->query->getBoolean('refresh', false);
             
             $books = $this->apiService->getRandomBooks($count, $refresh);
@@ -156,6 +157,31 @@ class BookController extends AbstractController
                 'title' => 'Random Books',
                 'books' => [],
                 'error' => 'Unable to load random books. Please try again later.',
+            ]);
+        }
+    }
+
+    /**
+     * Display lucky books - 9 random books for 手气不错 page
+     */
+    public function lucky(Request $request): Response
+    {
+        try {
+            $refresh = $request->query->getBoolean('refresh', false);
+            
+            $books = $this->apiService->getRandomBooks(9, $refresh);
+
+            return $this->render('books/lucky.html.twig', [
+                'title' => '手气不错',
+                'books' => $books,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load lucky books: ' . $e->getMessage());
+            
+            return $this->render('books/lucky.html.twig', [
+                'title' => '手气不错',
+                'books' => [],
+                'error' => 'Unable to load lucky books. Please try again later.',
             ]);
         }
     }
@@ -350,6 +376,42 @@ class BookController extends AbstractController
             'misc' => "其他信息包含「{$value}」的书籍",
             default => "搜索结果"
         };
+    }
+
+    /**
+     * Display today's books from the remote API
+     */
+    public function todaysBooks(): Response
+    {
+        try {
+            $response = $this->httpClient->request('GET', $_ENV['RSYWX_API_BASE_URL'] . '/books/today', [
+                'headers' => [
+                    'X-API-Key' => $_ENV['RSYWX_API_KEY']
+                ]
+            ]);
+
+            $data = $response->toArray();
+            
+            if (!$data['success']) {
+                throw new \Exception('API returned error: ' . ($data['message'] ?? 'Unknown error'));
+            }
+
+            return $this->render('books/todays_books.html.twig', [
+                'books' => $data['data'],
+                'date_info' => $data['date_info'] ?? null,
+                'cached' => $data['cached'] ?? false,
+                'error' => null
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load today\'s books: ' . $e->getMessage());
+            
+            return $this->render('books/todays_books.html.twig', [
+                'error' => 'Unable to load today\'s books. Please try again later.',
+                'books' => [],
+                'date_info' => null,
+                'cached' => false
+            ]);
+        }
     }
 
     private function getSearchDescription(string $key, string $value): string

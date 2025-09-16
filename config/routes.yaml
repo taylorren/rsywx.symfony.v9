@@ -38,8 +38,12 @@ books_latest:
     controller: App\Controller\BookController::latest
 
 books_random:
-    path: /books/random
+    path: /books/random/{count}
     controller: App\Controller\BookController::random
+    defaults:
+        count: 1
+    requirements:
+        count: '\d+'
 
 books_recent:
     path: /books/recent
@@ -49,12 +53,9 @@ books_forgotten:
     path: /books/forgotten
     controller: App\Controller\BookController::forgotten
 
-books_today:
-    path: /books/today/{month}/{date}
-    controller: App\Controller\BookController::today
-    requirements:
-        month: '\d+'
-        date: '\d+'
+books_lucky:
+    path: /books/lucky
+    controller: App\Controller\BookController::lucky
 
 books_list:
     path: /books/list/{key}/{value}/{page}
@@ -79,6 +80,11 @@ api_add_tags:
     methods: [POST]
     requirements:
         bookId: '.+'
+
+books_today:
+    path: /books/today
+    controller: App\Controller\BookController::todaysBooks
+    methods: [GET]
 
 # Turbo frame routes
 book_tags_frame:

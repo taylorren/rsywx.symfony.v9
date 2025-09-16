@@ -296,15 +296,16 @@ class RsywxApiService
     public function getTodaysBooks(bool $refresh = false): array
     {
         try {
-            $data = $this->makeRequestWithRetry('GET', '/books/today', [
+            $response = $this->makeRequestWithRetry('GET', '/books/today', [
                 'refresh' => $refresh
             ]);
             
-            if (!$data || !isset($data['books'])) {
-                return [];
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($bookData) => Book::fromArray($bookData), $response['data']);
             }
             
-            return array_map(fn($bookData) => Book::fromArray($bookData), $data['books']);
+            return [];
         } catch (\Exception $e) {
             $this->logger->error('Failed to get today\'s books', [
                 'error' => $e->getMessage(),

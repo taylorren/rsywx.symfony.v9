@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}今日藏书{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-calendar-day text-primary me-2"></i>
+            今日藏书
+        </h1>
+    </div>
+
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ error }}
+                </div>
+            {% else %}
+                {% if books is empty %}
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        今日暂无推荐书籍
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width: 70%;">书籍信息</th>
+                                    <th scope="col" style="width: 30%;">封面</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for book in books %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <h5 class="mb-2">
+                                                    <a href="{{ path('book_details', {bookId: book.bookid}) }}" class="text-decoration-none">
+                                                        {{ book.title }}
+                                                    </a>
+                                                </h5>
+                                                {% if book.years_ago %}
+                                                    <p class="text-muted mb-2">
+                                                        <i class="fas fa-calendar me-1"></i>
+                                                        {{ book.years_ago }}年之前
+                                                    </p>
+                                                {% endif %}
+                                                {% if book.location %}
+                                                    <p class="text-muted mb-2">
+                                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                                        <span class="badge bg-warning text-dark">{{ book.location }}</span>
+                                                    </p>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            {% if book.cover_uri %}
+                                                <img src="/covers/{{ book.bookid }}.webp" 
+                                                     alt="{{ book.title }}" 
+                                                     class="img-thumbnail zoom-thumbnail" 
+                                                     style="max-width: 120px; max-height: 160px; object-fit: cover; cursor: pointer;"
+                                                     data-bs-toggle="modal" 
+                                                     data-bs-target="#imageModal"
+                                                     data-bs-image="/covers/{{ book.bookid }}.webp"
+                                                     data-bs-title="{{ book.title }}">
+                                            {% else %}
+                                                <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                     style="width: 120px; height: 160px; border-radius: 0.375rem;">
+                                                    <i class="fas fa-book text-muted fa-2x"></i>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+            <!-- Image Zoom Modal -->
+            <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="imageModalLabel">书籍封面</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 70vh;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Handle image modal
+                document.addEventListener('DOMContentLoaded', function() {
+                    const imageModal = document.getElementById('imageModal');
+                    if (imageModal) {
+                        imageModal.addEventListener('show.bs.modal', function (event) {
+                            const button = event.relatedTarget;
+                            const imageSrc = button.getAttribute('data-bs-image');
+                            const imageTitle = button.getAttribute('data-bs-title');
+                            
+                            const modalImage = document.getElementById('modalImage');
+                            const modalTitle = document.getElementById('imageModalLabel');
+                            
+                            modalImage.src = imageSrc;
+                            modalImage.alt = imageTitle;
+                            modalTitle.textContent = imageTitle;
+                        });
+                    }
+                });
+            </script>
+        {% endif %}
+
+</div>
+{% endblock %}

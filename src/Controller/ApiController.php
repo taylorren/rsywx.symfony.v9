@@ -7,13 +7,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 
 class ApiController extends AbstractController
 {
     public function __construct(
         private RsywxApiService $apiService,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private HttpClientInterface $httpClient
     ) {}
 
     /**
@@ -65,6 +67,41 @@ class ApiController extends AbstractController
             return new JsonResponse([
                 'success' => false,
                 'error' => 'Internal server error'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Get books purchased on today's date in previous years
+     */
+    public function getTodaysBooks(Request $request): JsonResponse
+    {
+        try {
+            $refresh = $request->query->getBoolean('refresh', false);
+            
+            // Make a direct HTTP request to the remote API
+            $url = $_ENV['RSYWX_API_BASE_URL'] . '/books/today';
+            $queryParams = $refresh ? '?refresh=true' : '';
+            
+            $response = $this->httpClient->request('GET', $url . $queryParams, [
+                'headers' => [
+                    'X-API-Key' => $_ENV['RSYWX_API_KEY'],
+                    'Accept' => 'application/json'
+                ]
+            ]);
+            
+            $data = $response->toArray();
+            return new JsonResponse($data);
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get today\'s books', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Failed to retrieve today\'s books'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
