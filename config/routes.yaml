@@ -15,6 +15,14 @@ random_books:
     path: /random-books
     controller: App\Controller\HomeController::randomBooks
 
+word_of_day:
+    path: /word-of-day
+    controller: App\Controller\HomeController::wordOfTheDay
+
+quote_of_day:
+    path: /quote-of-day
+    controller: App\Controller\HomeController::quoteOfTheDay
+
 # Books routes
 books_dashboard:
     path: /books

@@ -34,7 +34,7 @@ class DarkModeToggle {
     }
 
     setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
         localStorage.setItem('theme', theme);
         this.currentTheme = theme;
         this.updateButtonIcon();
@@ -48,12 +48,15 @@ class DarkModeToggle {
     createToggleButton() {
         console.log('DarkModeToggle: Creating toggle button...');
         
-        // Check if button already exists
-        if (document.querySelector('.dark-mode-toggle')) {
-            console.log('DarkModeToggle: Button already exists');
+        // Check if button already exists in footer
+        const existingButton = document.querySelector('.dark-mode-toggle');
+        if (existingButton) {
+            console.log('DarkModeToggle: Button already exists in footer');
+            this.toggleButton = existingButton;
             return;
         }
 
+        // If no button exists in footer, create one (fallback)
         const button = document.createElement('button');
         button.className = 'dark-mode-toggle';
         button.setAttribute('aria-label', 'Toggle dark mode');
@@ -64,12 +67,12 @@ class DarkModeToggle {
         icon.className = 'fas fa-moon';
         button.appendChild(icon);
         
-        // Add to body
+        // Add to body as fallback
         document.body.appendChild(button);
         
         this.toggleButton = button;
         
-        console.log('DarkModeToggle: Button created and added to DOM');
+        console.log('DarkModeToggle: Fallback button created and added to DOM');
     }
 
     updateButtonIcon() {

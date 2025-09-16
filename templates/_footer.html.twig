@@ -1,15 +1,75 @@
-<!-- Footer -->
-<footer class="bg-dark text-light py-4 mt-5">
+<footer class="bg-body-tertiary border-top py-4 mt-5">
     <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h5>RSYWX 图书馆</h5>
-                <p class="mb-0">个人图书收藏管理系统</p>
-            </div>
-            <div class="col-md-6 text-md-end">
-                <p class="mb-0">
-                    <small>Powered by Symfony & Bootstrap</small>
+        <div class="row g-4">
+            <!-- Column 1: Copyright and CC License -->
+            <div class="col-md-4">
+                <h6 class="text-body mb-3">版权信息</h6>
+                <p class="text-body-secondary mb-2">
+                    <small>&copy; {{ "now"|date("Y") }} RSYWX 图书馆</small>
                 </p>
+                <p class="text-body-secondary mb-2">
+                    <small>
+                        <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener" class="link-primary d-flex align-items-center">
+                            <i class="fab fa-creative-commons me-1"></i>
+                            <i class="fab fa-creative-commons-by me-1"></i>
+                            <i class="fab fa-creative-commons-nc me-1"></i>
+                            <i class="fab fa-creative-commons-nd me-1"></i>
+                        </a>
+                    </small>
+                </p>
+                <p class="text-body-secondary mb-0">
+                    <small>本站内容采用知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议进行许可。</small>
+                </p>
+            </div>
+
+            <!-- Column 2: Tech Stack -->
+            <div class="col-md-4">
+                <h6 class="text-body mb-3">技术栈</h6>
+                <p class="text-body-secondary mb-2">
+                    <small>
+                        <i class="fab fa-php text-primary me-1"></i>
+                        <a href="https://symfony.com/" target="_blank" rel="noopener" class="link-primary">Symfony</a>
+                    </small>
+                </p>
+                <p class="text-body-secondary mb-2">
+                    <small>
+                        <i class="fab fa-bootstrap text-primary me-1"></i>
+                        <a href="https://getbootstrap.com/" target="_blank" rel="noopener" class="link-primary">Bootstrap</a>
+                    </small>
+                </p>
+                <p class="text-body-secondary mb-2">
+                    <small>
+                        <i class="fab fa-js-square text-primary me-1"></i>
+                        <a href="https://turbo.hotwired.dev/" target="_blank" rel="noopener" class="link-primary">Turbo</a>
+                    </small>
+                </p>
+                <p class="text-body-secondary mb-0">
+                    <small>
+                        <i class="fas fa-database text-primary me-1"></i>
+                        <a href="https://www.doctrine-project.org/" target="_blank" rel="noopener" class="link-primary">Doctrine</a>
+                    </small>
+                </p>
+            </div>
+
+            <!-- Column 3: Family Members -->
+            <div class="col-md-4">
+                <h6 class="text-body mb-3">家庭成员</h6>
+                <div class="d-flex justify-content-center gap-3">
+                    <img src="{{ asset('images/tr.png') }}" alt="TR" title="老彼得爸" class="img-fluid rounded-circle border border-secondary-subtle" style="width: 80px; height: 80px; object-fit: cover;">
+                    <img src="{{ asset('images/gr.png') }}" alt="GR" title="老彼得妈" class="img-fluid rounded-circle border border-secondary-subtle" style="width: 80px; height: 80px; object-fit: cover;">
+                    <img src="{{ asset('images/pr.jpg') }}" alt="PR" title="老彼得" class="img-fluid rounded-circle border border-secondary-subtle" style="width: 80px; height: 80px; object-fit: cover;">
+                    <img src="{{ asset('images/rt.png') }}" alt="RT" title="Raphael the Tortoise" class="img-fluid rounded-circle border border-secondary-subtle" style="width: 80px; height: 80px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Theme Toggle Button -->
+        <div class="row mt-3 pt-3 border-top border-secondary-subtle">
+            <div class="col-12 text-center">
+                <button class="dark-mode-toggle btn btn-outline-secondary btn-sm" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <i class="fas fa-moon me-1"></i>
+                    <span class="d-none d-sm-inline">切换主题</span>
+                </button>
             </div>
         </div>
     </div>

@@ -1,0 +1,57 @@
+<!-- Quote of the Day -->
+<turbo-frame id="quote-of-day">
+{% if quote_of_the_day %}
+<div class="bg-body-tertiary rounded-3 shadow-lg mb-4">
+    <div class="row g-0 h-100">
+        <!-- Left side with wave SVG -->
+        <div class="col-lg-4 position-relative overflow-hidden d-flex align-items-center justify-content-center" style="min-height: 200px;">
+            <!-- Decorative wave shape -->
+            <svg class="position-absolute start-0 top-0 w-100 h-100" style="color: var(--bs-success);" preserveAspectRatio="none" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0L67 12C133 24 267 48 400 55V200H0V0Z" fill="currentColor" opacity="0.1"></path>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 20L67 32C133 44 267 68 400 75V200H0V20Z" fill="currentColor" opacity="0.05"></path>
+            </svg>
+            <div class="position-relative z-1 text-center">
+                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 80px; height: 80px;">
+                    <i class="bi bi-quote fs-1 text-success"></i>
+                </div>
+                <h6 class="text-success text-uppercase mb-2">QOTD</h6>
+                <a href="{{ path('quote_of_day', {'refresh': 'true'}) }}" class="btn btn-outline-success btn-sm" title="刷新每日名言">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Right side with content -->
+        <div class="col-lg-8 p-4">
+            <blockquote class="blockquote mb-3">
+                <p class="fs-5 mb-0 text-body fst-italic">"{{ quote_of_the_day.quote }}"</p>
+            </blockquote>
+            
+            {% if quote_of_the_day.source %}
+                <footer class="blockquote-footer">
+                    <cite title="Source Title">{{ quote_of_the_day.source }}</cite>
+                </footer>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="bg-body-tertiary rounded-3 shadow-lg mb-4">
+    <div class="row g-0 h-100">
+        <div class="col-lg-4 position-relative overflow-hidden d-flex align-items-center justify-content-center" style="min-height: 200px;">
+            <div class="position-relative z-1 text-center">
+                <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 80px; height: 80px;">
+                    <i class="bi bi-exclamation-triangle fs-1 text-secondary"></i>
+                </div>
+                <h6 class="text-secondary text-uppercase mb-2">QOTD</h6>
+            </div>
+        </div>
+        <div class="col-lg-8 p-4 d-flex align-items-center">
+            <div class="text-center w-100">
+                <p class="text-muted mb-0">暂无每日名言数据</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+</turbo-frame>

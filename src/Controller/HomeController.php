@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\RsywxApiService;
 use App\DTO\Book;
 use App\DTO\CollectionStats;
+use App\DTO\QuoteOfTheDay;
 use App\DTO\WordOfTheDay;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,8 +22,10 @@ final class HomeController extends AbstractController
     /**
      * Homepage with collection overview using parallel API requests
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $refresh = $request->query->getBoolean('refresh', false);
+        
         try {
             // Define all API requests to be made in parallel
             $requests = [
@@ -31,7 +34,8 @@ final class HomeController extends AbstractController
                 'random' => ['method' => 'GET', 'endpoint' => '/books/random/4'],
                 'forgotten' => ['method' => 'GET', 'endpoint' => '/books/forgotten/1'],
                 'recent' => ['method' => 'GET', 'endpoint' => '/books/last_visited/1'],
-                'wotd' => ['method' => 'GET', 'endpoint' => '/misc/wotd'],
+                'wotd' => ['method' => 'GET', 'endpoint' => '/misc/wotd', 'params' => ['refresh' => $refresh]],
+                'qotd' => ['method' => 'GET', 'endpoint' => '/misc/qotd'],
                 'reading_summary' => ['method' => 'GET', 'endpoint' => '/readings/summary'],
                 'latest_readings' => ['method' => 'GET', 'endpoint' => '/readings/latest/10']
             ];
@@ -46,6 +50,7 @@ final class HomeController extends AbstractController
             $forgottenBooksData = $responses['forgotten'];
             $recentlyVisitedBooksData = $responses['recent'];
             $wordOfTheDayData = $responses['wotd'];
+            $quoteOfTheDayData = $responses['qotd'];
             $readingSummaryData = $responses['reading_summary'];
             $latestReadingsData = $responses['latest_readings'];
 
@@ -74,6 +79,10 @@ final class HomeController extends AbstractController
                 ? WordOfTheDay::fromArray($wordOfTheDayData['data'])
                 : null;
 
+            $quoteOfTheDay = $quoteOfTheDayData && isset($quoteOfTheDayData['success']) && $quoteOfTheDayData['success'] && isset($quoteOfTheDayData['data'])
+                ? QuoteOfTheDay::fromArray($quoteOfTheDayData['data'])
+                : null;
+
             // Process reading data
             $readingSummary = $readingSummaryData && isset($readingSummaryData['success']) && $readingSummaryData['success'] && isset($readingSummaryData['data'])
                 ? $readingSummaryData['data']
@@ -90,6 +99,7 @@ final class HomeController extends AbstractController
                 'forgotten_books' => $forgottenBooks,
                 'recently_visited_books' => $recentlyVisitedBooks,
                 'word_of_the_day' => $wordOfTheDay,
+                'quote_of_the_day' => $quoteOfTheDay,
                 'readingSummary' => $readingSummary,
                 'latestReadings' => $latestReadings,
             ]);
@@ -104,6 +114,7 @@ final class HomeController extends AbstractController
                 'forgotten_books' => [],
                 'recently_visited_books' => [],
                 'word_of_the_day' => null,
+                'quote_of_the_day' => null,
                 'readingSummary' => null,
                 'latestReadings' => [],
             ]);
@@ -137,6 +148,48 @@ final class HomeController extends AbstractController
     private function getRandomBooks(bool $refresh = true): array
     {
         return $this->apiService->getRandomBooks(4, $refresh);
+    }
+
+    /**
+     * Get word of the day for Turbo frame updates
+     */
+    public function wordOfTheDay(Request $request): Response
+    {
+        try {
+            $refresh = $request->query->get('refresh', 'false') === 'true';
+            $wordOfTheDay = $this->apiService->getWordOfTheDay($refresh);
+            
+            return $this->render('_word_of_day.html.twig', [
+                'word_of_the_day' => $wordOfTheDay,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load word of the day: ' . $e->getMessage());
+            
+            return $this->render('_word_of_day.html.twig', [
+                'word_of_the_day' => null,
+            ]);
+        }
+    }
+
+    /**
+     * Get quote of the day for Turbo frame updates
+     */
+    public function quoteOfTheDay(Request $request): Response
+    {
+        try {
+            $refresh = $request->query->get('refresh', 'false') === 'true';
+            $quoteOfTheDay = $this->apiService->getQuoteOfTheDay($refresh);
+            
+            return $this->render('_quote_of_day.html.twig', [
+                'quote_of_the_day' => $quoteOfTheDay,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load quote of the day: ' . $e->getMessage());
+            
+            return $this->render('_quote_of_day.html.twig', [
+                'quote_of_the_day' => null,
+            ]);
+        }
     }
 
     /**

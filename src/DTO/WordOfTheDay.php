@@ -5,17 +5,11 @@ namespace App\DTO;
 class WordOfTheDay
 {
     public function __construct(
+        public readonly int $id,
         public readonly string $word,
-        public readonly string $definition,
-        public readonly string $pronunciation,
-        public readonly string $partOfSpeech,
-        public readonly array $examples = [],
-        public readonly array $synonyms = [],
-        public readonly array $antonyms = [],
-        public readonly ?string $etymology = null,
-        public readonly ?string $audioUrl = null,
-        public readonly ?string $date = null,
-        public readonly ?string $source = null
+        public readonly string $meaning,
+        public readonly string $sentence,
+        public readonly string $type
     ) {}
 
     /**
@@ -24,69 +18,12 @@ class WordOfTheDay
     public static function fromArray(array $data): self
     {
         return new self(
+            id: $data['id'] ?? 0,
             word: $data['word'] ?? '',
-            definition: $data['definition'] ?? '',
-            pronunciation: $data['pronunciation'] ?? '',
-            partOfSpeech: $data['part_of_speech'] ?? '',
-            examples: $data['examples'] ?? [],
-            synonyms: $data['synonyms'] ?? [],
-            antonyms: $data['antonyms'] ?? [],
-            etymology: $data['etymology'] ?? null,
-            audioUrl: $data['audio_url'] ?? null,
-            date: $data['date'] ?? null,
-            source: $data['source'] ?? null
+            meaning: $data['meaning'] ?? '',
+            sentence: $data['sentence'] ?? '',
+            type: $data['type'] ?? ''
         );
-    }
-
-    /**
-     * Get formatted date
-     */
-    public function getFormattedDate(): string
-    {
-        if ($this->date) {
-            return date('Y年m月d日', strtotime($this->date));
-        }
-        return date('Y年m月d日');
-    }
-
-    /**
-     * Check if word has audio pronunciation
-     */
-    public function hasAudio(): bool
-    {
-        return !empty($this->audioUrl);
-    }
-
-    /**
-     * Check if word has examples
-     */
-    public function hasExamples(): bool
-    {
-        return !empty($this->examples);
-    }
-
-    /**
-     * Check if word has synonyms
-     */
-    public function hasSynonyms(): bool
-    {
-        return !empty($this->synonyms);
-    }
-
-    /**
-     * Check if word has antonyms
-     */
-    public function hasAntonyms(): bool
-    {
-        return !empty($this->antonyms);
-    }
-
-    /**
-     * Check if word has etymology information
-     */
-    public function hasEtymology(): bool
-    {
-        return !empty($this->etymology);
     }
 
     /**
@@ -94,23 +31,63 @@ class WordOfTheDay
      */
     public function getFirstExample(): ?string
     {
-        return $this->examples[0] ?? null;
+        return $this->sentence;
     }
 
     /**
-     * Get synonyms as comma-separated string
+     * Get synonyms as comma-separated string (not available in API)
      */
     public function getSynonymsString(): string
     {
-        return implode(', ', $this->synonyms);
+        return '';
     }
 
     /**
-     * Get antonyms as comma-separated string
+     * Get antonyms as comma-separated string (not available in API)
      */
     public function getAntonymsString(): string
     {
-        return implode(', ', $this->antonyms);
+        return '';
+    }
+
+    /**
+     * Check if word has synonyms (not available in API)
+     */
+    public function hasSynonyms(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Check if word has antonyms (not available in API)
+     */
+    public function hasAntonyms(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Check if word has etymology information (not available in API)
+     */
+    public function hasEtymology(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Check if word has examples
+     */
+    public function hasExamples(): bool
+    {
+        return !empty($this->sentence);
+    }
+
+    /**
+     * Check if word has audio pronunciation (not available in API)
+     */
+    public function hasAudio(): bool
+    {
+        return false;
     }
 
     /**
@@ -120,12 +97,8 @@ class WordOfTheDay
     {
         $parts = [$this->word];
         
-        if ($this->pronunciation) {
-            $parts[] = '[' . $this->pronunciation . ']';
-        }
-        
-        if ($this->partOfSpeech) {
-            $parts[] = '(' . $this->partOfSpeech . ')';
+        if ($this->type) {
+            $parts[] = '(' . $this->type . ')';
         }
         
         return implode(' ', $parts);
@@ -136,10 +109,10 @@ class WordOfTheDay
      */
     public function getShortDefinition(int $maxLength = 100): string
     {
-        if (mb_strlen($this->definition) <= $maxLength) {
-            return $this->definition;
+        if (mb_strlen($this->meaning) <= $maxLength) {
+            return $this->meaning;
         }
         
-        return mb_substr($this->definition, 0, $maxLength) . '...';
+        return mb_substr($this->meaning, 0, $maxLength) . '...';
     }
 }

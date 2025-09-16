@@ -22,7 +22,7 @@
     --alert-danger-border: #f5c6cb;
 }
 
-[data-theme="dark"] {
+[data-bs-theme="dark"] {
     /* Dark theme colors */
     --bg-primary: #1a1a1a;
     --bg-secondary: #2d2d2d;
@@ -129,12 +129,6 @@ body {
     color: var(--alert-danger-text);
 }
 
-/* Jumbotron */
-.jumbotron {
-    background-color: var(--btn-primary-bg) !important;
-    color: var(--btn-primary-text) !important;
-}
-
 /* Links */
 a {
     color: var(--btn-outline-text);
@@ -144,33 +138,17 @@ a:hover {
     color: var(--btn-primary-bg);
 }
 
-/* Dark mode toggle button */
+/* Dark mode toggle button - now in footer, remove fixed positioning */
 .dark-mode-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--btn-primary-bg);
-    border: 2px solid var(--border-color);
-    color: var(--btn-primary-text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 10px var(--card-shadow);
 }
 
 .dark-mode-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 20px var(--card-shadow);
+    transform: scale(1.05);
 }
 
 .dark-mode-toggle i {
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 /* Dropdown menus */
@@ -210,7 +188,7 @@ img {
     transition: opacity 0.3s ease;
 }
 
-[data-theme="dark"] img {
+[data-bs-theme="dark"] img {
     opacity: 0.9;
 }
 
@@ -221,116 +199,6 @@ img {
 
 .text-secondary {
     color: var(--text-secondary) !important;
-}
-
-/* Simple table styles */
-.simple-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-}
-
-.simple-table th {
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
-    padding: 12px;
-    text-align: left;
-    border-bottom: 2px solid var(--border-color);
-    font-weight: 600;
-}
-
-.simple-table td {
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-primary);
-}
-
-.simple-table tr:nth-child(even) {
-    background-color: var(--bg-secondary);
-}
-
-.simple-table tr:hover {
-    background-color: var(--bg-tertiary);
-}
-
-.simple-table a {
-    color: var(--btn-outline-text);
-    text-decoration: none;
-}
-
-.simple-table a:hover {
-    color: var(--btn-primary-bg);
-    text-decoration: underline;
-}
-
-/* Themed table styles */
-.themed-table {
-    background-color: var(--card-bg) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border-color) !important;
-}
-
-.themed-table thead th {
-    background-color: var(--bg-secondary) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border-color) !important;
-    border-bottom: 2px solid var(--border-color) !important;
-}
-
-.themed-table tbody tr {
-    background-color: var(--card-bg) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border-color) !important;
-}
-
-.themed-table tbody tr:nth-child(odd) {
-    background-color: var(--bg-secondary) !important;
-}
-
-.themed-table tbody tr:hover {
-    background-color: var(--bg-tertiary) !important;
-}
-
-.themed-table td, .themed-table th {
-    border-color: var(--border-color) !important;
-}
-
-.themed-table a {
-    color: var(--btn-outline-text) !important;
-    text-decoration: none;
-}
-
-.themed-table a:hover {
-    color: var(--btn-primary-bg) !important;
-    text-decoration: underline;
-}
-
-/* Themed pagination styles */
-.themed-pagination .page-link {
-    background-color: var(--card-bg) !important;
-    color: var(--text-secondary) !important;
-    border-color: var(--border-color) !important;
-}
-
-.themed-pagination .page-item.active .page-link {
-    background-color: var(--btn-primary-bg) !important;
-    border-color: var(--btn-primary-bg) !important;
-    color: var(--btn-primary-text) !important;
-}
-
-.themed-pagination .page-link:hover {
-    background-color: var(--bg-tertiary) !important;
-    color: var(--btn-primary-bg) !important;
-    border-color: var(--border-color) !important;
-}
-
-.themed-pagination .page-item.disabled .page-link {
-    background-color: var(--bg-secondary) !important;
-    color: var(--text-muted) !important;
-    border-color: var(--border-color) !important;
 }
 
 /* Smooth transitions for theme switching */

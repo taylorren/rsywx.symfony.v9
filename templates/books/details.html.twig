@@ -294,24 +294,23 @@
 <!-- Add Tags Modal -->
 <div class="modal fade" id="addTagsModal" tabindex="-1" aria-labelledby="addTagsModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
     <div class="modal-dialog">
-        <div class="modal-content" style="background-color: var(--bs-body-bg); color: var(--bs-body-color); border: 1px solid var(--bs-border-color);">
-            <div class="modal-header" style="border-bottom: 1px solid var(--bs-border-color);">
-                <h5 class="modal-title" id="addTagsModalLabel" style="color: var(--bs-body-color);">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTagsModalLabel">
                     <i class="bi bi-tags"></i> 添加标签
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--bs-btn-close-filter, none);"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="addTagsForm">
                     <div class="mb-3">
-                        <label for="tagsInput" class="form-label" style="color: var(--bs-body-color);">标签 (用空格分隔)</label>
+                        <label for="tagsInput" class="form-label">标签 (用空格分隔)</label>
                         <input type="text" class="form-control" id="tagsInput" name="tags" 
-                               placeholder="例如: 小说 经典 文学" required
-                               style="background-color: var(--bs-body-bg); color: var(--bs-body-color); border-color: var(--bs-border-color);">
-                        <div class="form-text" style="color: var(--bs-secondary-color);">请用空格分隔多个标签</div>
+                               placeholder="例如: 小说 经典 文学" required>
+                        <div class="form-text">请用空格分隔多个标签</div>
                     </div>
                     <div class="mb-3">
-                        <h6 style="color: var(--bs-body-color);">当前标签：</h6>
+                        <h6>当前标签：</h6>
                         <div id="currentTags">
                             {% if book.tags is not empty %}
                                 {% for tag in book.tags %}
@@ -324,7 +323,7 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer" style="border-top: 1px solid var(--bs-border-color);">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-primary" id="saveTagsBtn">
                     <i class="bi bi-check-circle"></i> 保存标签

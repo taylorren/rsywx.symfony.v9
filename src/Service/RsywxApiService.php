@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\DTO\Book;
 use App\DTO\CollectionStats;
+use App\DTO\QuoteOfTheDay;
 use App\DTO\SearchResult;
 use App\DTO\WordOfTheDay;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -401,13 +402,46 @@ class RsywxApiService
     /**
      * Get Word of the Day
      */
-    public function getWordOfTheDay(): ?WordOfTheDay
+    public function getWordOfTheDay(bool $refresh = false): ?WordOfTheDay
     {
         try {
-            $data = $this->makeRequestWithRetry('GET', '/misc/wotd');
+            $data = $this->makeRequestWithRetry('GET', '/misc/wotd', [
+                'refresh' => $refresh
+            ]);
+            
+            // Check if data has the expected structure
+            if ($data && isset($data['success']) && $data['success'] && isset($data['data'])) {
+                return WordOfTheDay::fromArray($data['data']);
+            }
+            
             return $data ? WordOfTheDay::fromArray($data) : null;
         } catch (\Exception $e) {
             $this->logger->error('Failed to get word of the day', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
+    }
+
+    /**
+     * Get Quote of the Day
+     */
+    public function getQuoteOfTheDay(bool $refresh = false): ?QuoteOfTheDay
+    {
+        try {
+            $data = $this->makeRequestWithRetry('GET', '/misc/qotd', [
+                'refresh' => $refresh
+            ]);
+            
+            // Check if data has the expected structure
+            if ($data && isset($data['success']) && $data['success'] && isset($data['data'])) {
+                return QuoteOfTheDay::fromArray($data['data']);
+            }
+            
+            return $data ? QuoteOfTheDay::fromArray($data) : null;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get quote of the day', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
