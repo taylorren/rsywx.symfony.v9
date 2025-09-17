@@ -91,7 +91,7 @@ async function loadTodaysBooks() {
 function renderTodaysBooks(books) {
     const booksHtml = books.map(book => {
         const yearsAgo = book.years_ago || calculateYearsAgo(book.purchdate);
-        const coverUrl = book.cover_uri || '/images/default.jpg';
+        const coverUrl = book.cover_uri || '/images/default.webp';
         
         return `
             <div class="col-md-6 col-lg-4 mb-4">
@@ -101,7 +101,7 @@ function renderTodaysBooks(books) {
                              class="card-img-top" 
                              alt="${book.title}"
                              style="height: 200px; object-fit: cover;"
-                             onerror="this.src='/images/default.jpg'">
+                             onerror="this.src='/images/default.webp'">
                         <div class="position-absolute top-0 end-0 m-2">
                             <span class="badge bg-warning text-dark">
                                 <i class="fas fa-clock me-1"></i>
