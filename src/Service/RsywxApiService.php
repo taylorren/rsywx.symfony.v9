@@ -265,6 +265,32 @@ class RsywxApiService
 
 
     /**
+     * Get popular books (most visited)
+     */
+    public function getPopularBooks(int $count = 20, bool $refresh = false): array
+    {
+        try {
+            $response = $this->makeRequestWithRetry('GET', "/books/popular/{$count}", [
+                'refresh' => $refresh
+            ]);
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($bookData) => Book::fromArray($bookData), $response['data']);
+            }
+            
+            return [];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get popular books', [
+                'count' => $count,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
+    }
+
+    /**
      * Get forgotten books (not visited recently)
      */
     public function getForgottenBooks(int $count = 5, bool $refresh = false): array
@@ -626,11 +652,17 @@ class RsywxApiService
             // Dataset 1: Visit History Chart (Past 30 days)
             $visitHistoryData = $this->getVisitHistory(30, $refresh);
             
-            // For now, return the first dataset
-            // TODO: Add other datasets (popular books, visit stats, trending books, recent activities)
+            // Dataset 2: Popular Books (Top 20)
+            $popularBooks = $this->getPopularBooks(20, $refresh);
+            
             return [
                 'datasets' => [
-                    'visit_history' => $visitHistoryData
+                    'visit_history' => $visitHistoryData,
+                    'popular_books' => [
+                        'success' => true,
+                        'data' => $popularBooks,
+                        'cached' => false
+                    ]
                 ]
             ];
         } catch (\Exception $e) {
@@ -645,6 +677,11 @@ class RsywxApiService
                         'success' => false,
                         'data' => [],
                         'period_info' => null,
+                        'cached' => false
+                    ],
+                    'popular_books' => [
+                        'success' => false,
+                        'data' => [],
                         'cached' => false
                     ]
                 ]

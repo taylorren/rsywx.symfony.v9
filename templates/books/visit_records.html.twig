@@ -40,12 +40,12 @@
 							<a href="#recent-visits" class="list-group-item list-group-item-action active" data-dataset="recent">
 								<i class="bi bi-clock-history me-2"></i>
 								最近访问记录
-								<small class="text-muted d-block">Recent Visit Records</small>
+								<small class="text-muted d-block">看看大家最近在看啥书</small>
 							</a>
 							<a href="#popular-books" class="list-group-item list-group-item-action" data-dataset="popular">
 								<i class="bi bi-star me-2"></i>
 								热门书籍
-								<small class="text-muted d-block">Popular Books</small>
+								<small class="text-muted d-block">哪些才是最热的书籍</small>
 							</a>
 							<a href="#visit-stats" class="list-group-item list-group-item-action" data-dataset="stats">
 								<i class="bi bi-graph-up me-2"></i>
@@ -75,16 +75,6 @@
 							<i class="bi bi-clock-history"></i>
 							最近访问记录
 						</h5>
-						<div class="btn-group btn-group-sm" role="group">
-							<button type="button" class="btn btn-outline-secondary" id="refresh-data">
-								<i class="bi bi-arrow-clockwise"></i>
-								刷新
-							</button>
-							<button type="button" class="btn btn-outline-secondary" id="export-data">
-								<i class="bi bi-download"></i>
-								导出
-							</button>
-						</div>
 					</div>
 					<div class="card-body" id="data-content">
 						{% if error is defined and error %}
@@ -143,11 +133,60 @@
 
 							<!-- Placeholder for other datasets -->
 							<div id="popular-books-content" class="data-panel d-none">
-								<div class="text-center py-5">
-									<i class="bi bi-star display-4 text-muted"></i>
-									<h4 class="mt-3">热门书籍数据</h4>
-									<p class="text-muted">正在加载热门书籍统计...</p>
-								</div>
+								{% if datasets.popular_books is defined and datasets.popular_books.success and datasets.popular_books.data is not empty %}
+									<div class="table-responsive">
+										<table class="table table-hover">
+											<thead class="table-light">
+												<tr>
+													<th scope="col">书名</th>
+													<th scope="col">访问次数</th>
+													<th scope="col">最后访问</th>
+													<th scope="col">位置</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for book in datasets.popular_books.data %}
+													<tr>
+														<td>
+															<a href="{{ path('book_details', {'bookId': book.bookid}) }}" class="text-decoration-none fw-medium">
+																{{ book.title }}
+															</a>
+														</td>
+														<td>
+															{% if book.totalVisits is defined and book.totalVisits %}
+																{{ book.totalVisits }}
+															{% else %}
+																<span class="text-muted">-</span>
+															{% endif %}
+														</td>
+														<td>
+															{% if book.lastVisited is defined and book.lastVisited %}
+																<small class="text-muted">
+																	<i class="bi bi-clock"></i> {{ book.lastVisited|date('Y-m-d H:i') }}
+																</small>
+															{% else %}
+																<small class="text-muted">未访问</small>
+															{% endif %}
+														</td>
+														<td>
+															{% if book.location is defined and book.location %}
+																<small class="text-muted">{{ book.location }}</small>
+															{% else %}
+																<small class="text-muted">未知位置</small>
+															{% endif %}
+														</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								{% else %}
+									<div class="text-center py-5">
+										<i class="bi bi-star display-4 text-muted"></i>
+										<h4 class="mt-3">热门书籍数据</h4>
+										<p class="text-muted">暂无热门书籍数据，开始浏览书籍后数据将会显示在这里。</p>
+									</div>
+								{% endif %}
 							</div>
 
 							<div id="visit-stats-content" class="data-panel d-none">

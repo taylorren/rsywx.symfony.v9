@@ -213,6 +213,32 @@ class BookController extends AbstractController
     }
 
     /**
+     * Display popular books (most visited)
+     */
+    public function popular(Request $request, int $count = 20): Response
+    {
+        try {
+            $refresh = $request->query->getBoolean('refresh', false);
+            
+            $books = $this->apiService->getPopularBooks($count, $refresh);
+
+            return $this->render('books/list.html.twig', [
+                'title' => 'Popular Books',
+                'books' => $books,
+                'show_visit_info' => true,
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load popular books: ' . $e->getMessage());
+            
+            return $this->render('books/list.html.twig', [
+                'title' => 'Popular Books',
+                'books' => [],
+                'error' => 'Unable to load popular books. Please try again later.',
+            ]);
+        }
+    }
+
+    /**
      * Display forgotten books
      */
     public function forgotten(Request $request): Response
