@@ -394,10 +394,20 @@ class RsywxApiService
      */
     public function getVisitHistory(int $days = 30, bool $refresh = false): array
     {
-        return $this->makeRequest('GET', '/books/visit_history', [
-            'days' => $days,
-            'refresh' => $refresh
-        ]);
+        $response = $this->makeRequest('GET', '/books/visit_history');
+        
+        // Return the full response to include period_info and other metadata
+        if (isset($response['success']) && $response['success']) {
+            return $response;
+        }
+        
+        // Return empty structure if API call failed
+        return [
+            'success' => false,
+            'data' => [],
+            'period_info' => null,
+            'cached' => false
+        ];
     }
 
     /**
@@ -604,6 +614,41 @@ class RsywxApiService
             ]);
             
             throw $e;
+        }
+    }
+
+    /**
+     * Get visit records with multiple datasets for comprehensive analysis
+     */
+    public function getVisitRecords(int $limit = 50, bool $refresh = false): array
+    {
+        try {
+            // Dataset 1: Visit History Chart (Past 30 days)
+            $visitHistoryData = $this->getVisitHistory(30, $refresh);
+            
+            // For now, return the first dataset
+            // TODO: Add other datasets (popular books, visit stats, trending books, recent activities)
+            return [
+                'datasets' => [
+                    'visit_history' => $visitHistoryData
+                ]
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get visit records', [
+                'limit' => $limit,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [
+                'datasets' => [
+                    'visit_history' => [
+                        'success' => false,
+                        'data' => [],
+                        'period_info' => null,
+                        'cached' => false
+                    ]
+                ]
+            ];
         }
     }
 

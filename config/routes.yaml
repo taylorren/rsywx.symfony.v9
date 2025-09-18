@@ -53,6 +53,10 @@ books_forgotten:
     path: /books/forgotten
     controller: App\Controller\BookController::forgotten
 
+books_visit_records:
+    path: /books/visit-records
+    controller: App\Controller\BookController::visitRecords
+
 books_lucky:
     path: /books/lucky
     controller: App\Controller\BookController::lucky

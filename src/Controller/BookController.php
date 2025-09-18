@@ -378,6 +378,38 @@ class BookController extends AbstractController
     }
 
     /**
+     * Display visit records
+     */
+    public function visitRecords(): Response
+    {
+        try {
+            // Get visit records from API (now returns multiple datasets)
+            $visitData = $this->apiService->getVisitRecords();
+            
+            return $this->render('books/visit_records.html.twig', [
+                'visit_data' => $visitData,
+                'records' => [], // For now, no table records - only chart data
+                'datasets' => $visitData['datasets'] ?? [],
+                'page_title' => '访问记录',
+                'page_description' => '书籍访问记录和统计',
+                'page_icon' => 'bi bi-clock-history'
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to load visit records: ' . $e->getMessage());
+            
+            return $this->render('books/visit_records.html.twig', [
+                'error' => 'Unable to load visit records. Please try again later.',
+                'visit_data' => ['visit_history' => [], 'datasets' => []],
+                'records' => [],
+                'datasets' => [],
+                'page_title' => '访问记录',
+                'page_description' => '书籍访问记录和统计',
+                'page_icon' => 'bi bi-clock-history'
+            ]);
+        }
+    }
+
+    /**
      * Display today's books from the remote API
      */
     public function todaysBooks(): Response
