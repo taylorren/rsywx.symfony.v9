@@ -5,6 +5,12 @@
 	- RSYWX Library
 {% endblock %}
 
+{% block javascripts %}
+	{{ parent() }}
+	<!-- Chart.js CDN -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
 {% block body %}
 	<div class="container mt-4">
 		<!-- Header -->
@@ -240,94 +246,68 @@
 				});
 			});
 
-			// Initialize Chart.js for visit history
+			// Chart initialization
 			const chartElement = document.getElementById('visitHistoryChart');
 			if (chartElement) {
-				{% if datasets.visit_history is defined and datasets.visit_history.data is not empty %}
+				{% if datasets.visit_history.data is defined and datasets.visit_history.data is not empty %}
 					const visitHistoryData = {{ datasets.visit_history.data|json_encode|raw }};
 					
 					// Process data for Chart.js
-					const chartData = {
-						labels: [],
-						datasets: [{
-							label: '访问次数',
-							data: [],
-							borderColor: 'rgb(75, 192, 192)',
-							backgroundColor: 'rgba(75, 192, 192, 0.2)',
-							tension: 0.1
-						}]
-					};
+					const labels = [];
+					const values = [];
 					
 					// Handle different API response formats
 					if (Array.isArray(visitHistoryData)) {
 						visitHistoryData.forEach(item => {
 							if (item.date && item.visit_count !== undefined) {
-								chartData.labels.push(item.date);
-								chartData.datasets[0].data.push(item.visit_count);
+								labels.push(item.date);
+								values.push(item.visit_count);
 							}
 						});
-					} else if (visitHistoryData && visitHistoryData.success === false) {
-						// API returned error, show placeholder
-						chartData.labels = ['暂无数据'];
-						chartData.datasets[0].data = [0];
-						chartData.datasets[0].borderColor = 'rgb(201, 203, 207)';
-						chartData.datasets[0].backgroundColor = 'rgba(201, 203, 207, 0.2)';
 					}
-					
-					const ctx = chartElement.getContext('2d');
-					new Chart(ctx, {
+
+					new Chart(chartElement, {
 						type: 'line',
-						data: chartData,
+						data: {
+							labels: labels,
+							datasets: [{
+								label: '访问次数',
+								data: values,
+								borderColor: 'rgb(75, 192, 192)',
+								backgroundColor: 'rgba(75, 192, 192, 0.2)',
+								tension: 0.1
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: false,
+							scales: {
+								y: {
+									beginAtZero: true
+								}
+							}
+						}
+					});
+				{% else %}
+					// Show placeholder chart for no data
+					new Chart(chartElement, {
+						type: 'line',
+						data: {
+							labels: ['无数据'],
+							datasets: [{
+								label: '访问次数',
+								data: [0],
+								borderColor: 'rgb(200, 200, 200)',
+								backgroundColor: 'rgba(200, 200, 200, 0.2)',
+							}]
+						},
 						options: {
 							responsive: true,
 							maintainAspectRatio: false,
 							scales: {
 								y: {
 									beginAtZero: true,
-									title: {
-										display: true,
-										text: '访问次数'
-									}
-								},
-								x: {
-									title: {
-										display: true,
-										text: '日期'
-									}
-								}
-							},
-							plugins: {
-								title: {
-									display: true,
-									text: '过去30天访问统计'
-								},
-								legend: {
-									display: true
-								}
-							}
-						}
-					});
-				{% else %}
-					// Show placeholder when no data
-					const ctx = chartElement.getContext('2d');
-					new Chart(ctx, {
-						type: 'line',
-						data: {
-							labels: ['暂无数据'],
-							datasets: [{
-								label: '访问次数',
-								data: [0],
-								borderColor: 'rgb(201, 203, 207)',
-								backgroundColor: 'rgba(201, 203, 207, 0.2)'
-							}]
-						},
-						options: {
-							responsive: true,
-							maintainAspectRatio: false,
-							plugins: {
-								title: {
-									display: true,
-									text: '过去30天访问统计 - 暂无数据'
+									max: 1
 								}
 							}
 						}
