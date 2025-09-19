@@ -24,10 +24,6 @@ quote_of_day:
     controller: App\Controller\HomeController::quoteOfTheDay
 
 # Books routes
-books_dashboard:
-    path: /books
-    controller: App\Controller\BookController::dashboard
-
 books_search:
     path: /books/search
     controller: App\Controller\BookController::search

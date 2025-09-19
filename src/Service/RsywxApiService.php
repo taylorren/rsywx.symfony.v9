@@ -672,6 +672,11 @@ class RsywxApiService
                     'method' => 'GET',
                     'endpoint' => '/books/last_visited/20',
                     'queryParams' => []
+                ],
+                'forgotten_books' => [
+                    'method' => 'GET',
+                    'endpoint' => '/books/forgotten/20',
+                    'queryParams' => ['refresh' => $refresh ? 'true' : 'false']
                 ]
             ];
 
@@ -745,6 +750,23 @@ class RsywxApiService
                 ];
             }
 
+            // Process forgotten books
+            if (isset($responses['forgotten_books']) && $responses['forgotten_books']['success']) {
+                $forgottenBooksData = array_map(fn($bookData) => Book::fromArray($bookData), $responses['forgotten_books']['data']);
+                $datasets['forgotten_books'] = [
+                    'success' => true,
+                    'data' => $forgottenBooksData,
+                    'cached' => $responses['forgotten_books']['cached'] ?? false
+                ];
+            } else {
+                $this->logger->warning('Forgotten books request failed in parallel execution');
+                $datasets['forgotten_books'] = [
+                    'success' => false,
+                    'data' => [],
+                    'cached' => false
+                ];
+            }
+
             return [
                 'datasets' => $datasets
             ];
@@ -776,6 +798,11 @@ class RsywxApiService
                         'cached' => false
                     ],
                     'recently_visited' => [
+                        'success' => false,
+                        'data' => [],
+                        'cached' => false
+                    ],
+                    'forgotten_books' => [
                         'success' => false,
                         'data' => [],
                         'cached' => false

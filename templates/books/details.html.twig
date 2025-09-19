@@ -9,16 +9,17 @@
             <i class="bi bi-exclamation-triangle"></i> {{ error }}
         </div>
         <div class="text-center mt-4">
-            <a href="{{ path('books_dashboard') }}" class="btn btn-primary">
-                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            <a href="{{ path('books_search') }}" class="btn btn-primary">
+                <i class="bi bi-search"></i>
+                Search Books
             </a>
         </div>
     {% elseif book %}
         <div class="row">
             <!-- Book Details -->
-            <div class="col-lg-6 mb-4">
+            <div class="col-lg-6 order-lg-1 order-2 mb-4">
                 <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
                         <h4 class="mb-0"><i class="bi bi-info-circle"></i> 图书信息</h4>
                         <button class="btn btn-outline-primary btn-sm" onclick="window.print()">
                             <i class="bi bi-printer"></i> 打印详情
@@ -38,24 +39,26 @@
 
                         <!-- Price and Purchase Info -->
                         <div class="row mb-4">
-                            <div class="col-md-2">
+                            <!-- First Row -->
+                            <div class="col-sm-6 col-lg-4 mb-2">
                                 <h6 class="text-muted mb-1">价格</h6>
                                 <p class="mb-0"><strong>{{ book.formattedPrice }}</strong></p>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-sm-6 col-lg-4 mb-2">
                                 <h6 class="text-muted mb-1">购买日期</h6>
                                 <p class="mb-0"><strong>{{ book.formattedPurchaseDate }}</strong></p>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-sm-6 col-lg-4 mb-2">
                                 <h6 class="text-muted mb-1">位置</h6>
                                 <p class="mb-0"><span class="badge bg-warning text-dark">{{ book.location }}</span></p>
                             </div>
                             {% if book.totalVisits %}
-                            <div class="col-md-3">
+                            <!-- Second Row -->
+                            <div class="col-sm-6 col-lg-6 mb-2">
                                 <h6 class="text-muted mb-1">访问次数</h6>
                                 <p class="mb-0"><strong>{{ book.totalVisits }}</strong></p>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-sm-6 col-lg-6 mb-2">
                                 <h6 class="text-muted mb-1">最后访问</h6>
                                 <p class="mb-0">
                                     {% if book.lastVisited %}
@@ -173,67 +176,22 @@
                             </div>
                         </turbo-frame>
 
-                        <!-- Reviews -->
-                        {% if book.reviews is not empty %}
-                        <hr>
-                        <h6 class="mb-3"><i class="bi bi-star"></i> 评论</h6>
-                        <div class="row">
-                            {% for review in book.reviews %}
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-light">
-                                    {% if review.feature %}
-                                        <img src="{{ review.feature }}" class="card-img-top" alt="{{ review.title }}" style="height: 200px; object-fit: cover;">
-                                    {% else %}
-                                        <img src="/images/default.webp" class="card-img-top" alt="Default" style="height: 200px; object-fit: cover;">
-                                    {% endif %}
-                                    <div class="card-body p-3">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                {% if review.uri %}
-                                <h6 class="card-title mb-0"><a href="{{ review.uri }}" target="_blank" class="text-decoration-none" style="color: var(--text-primary);">{{ review.title }}</a></h6>
-                            {% else %}
-                                <h6 class="card-title mb-0" style="color: var(--text-primary);">{{ review.title }}</h6>
-                            {% endif %}
-                                {% if review.rating is defined %}
-                                <div class="text-muted">
-                                    {% for i in 1..5 %}
-                                        {% if i <= review.rating %}
-                                            <i class="bi bi-star-fill"></i>
-                                        {% else %}
-                                            <i class="bi bi-star"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            </div>
-                                        {% if review.uri %}
-                                            <small class="text-muted"><a href="{{ review.uri }}" target="_blank" class="text-decoration-none text-muted">{{ review.datein }}</a></small>
-                                        {% else %}
-                                            <small class="text-muted">{{ review.datein }}</small>
-                                        {% endif %}
-                                        {% if review.uri %}
-                                            <br><a href="{{ review.uri }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">阅读全文</a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
+
                     </div>
                 </div>
             </div>
             
             <!-- Book Cover -->
-            <div class="col-lg-6 mb-4">
+            <div class="col-lg-6 order-lg-2 order-1 mb-4">
                 <div class="card">
                     <div class="card-body text-center">
                         {% if book.hasCover %}
                             <img src="/covers/{{ book.bookid }}.webp" alt="{{ book.title }}" 
-                                 class="img-fluid rounded shadow mx-auto" style="max-height: 500px; max-width: 100%; object-fit: contain;">
+                                 class="rounded shadow mx-auto d-block" style="width: 600px; max-width: 100%; height: auto;">
                         {% else %}
                             <div class="bg-secondary rounded d-flex align-items-center justify-content-center shadow mx-auto" 
-                                 style="height: 500px; width: 100%; max-width: 350px;">
-                                <i class="bi bi-book text-white" style="font-size: 5rem;"></i>
+                                 style="height: 300px; width: 100%; max-width: 250px;">
+                                <i class="bi bi-book text-white" style="font-size: 4rem;"></i>
                             </div>
                         {% endif %}
                     </div>
@@ -403,22 +361,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reset form when modal is closed
     document.getElementById('addTagsModal').addEventListener('hidden.bs.modal', function() {
+        // Reset form state
         tagsInput.value = '';
         saveTagsBtn.disabled = false;
         saveTagsBtn.innerHTML = '<i class="bi bi-check-circle"></i> 保存标签';
-        
-        // Ensure backdrop is properly removed
-        const backdrop = document.querySelector('.modal-backdrop');
-        if (backdrop) {
-            backdrop.remove();
-        }
-        
-        // Remove modal-open class from body if it exists
-        document.body.classList.remove('modal-open');
-        
-        // Reset body styles that might be affected by modal
-        document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
     });
 });
 </script>

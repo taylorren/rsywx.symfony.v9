@@ -131,49 +131,41 @@
 			</div>
 		</div>
 
-		<!-- Bootstrap Nav Tabs Layout -->
-		<div class="card">
-			<div class="card-header">
-				<ul class="nav nav-tabs card-header-tabs" id="visitTabs" role="tablist">
-					<li class="nav-item" role="presentation">
-						<button class="nav-link active" id="recent-visits-tab" data-bs-toggle="tab" data-bs-target="#recent-visits" type="button" role="tab">
+		<!-- Left Sidebar Navigation Layout -->
+		<div class="row">
+			<!-- Left Sidebar Navigation -->
+			<div class="col-md-3">
+				<div class="card">
+					<div class="card-header">
+						<h6 class="mb-0">
+							<i class="bi bi-list-ul me-2"></i>导航菜单
+						</h6>
+					</div>
+					<div class="list-group list-group-flush">
+						<button class="list-group-item list-group-item-action active" id="recent-visits-tab" data-bs-toggle="tab" data-bs-target="#recent-visits" type="button" role="tab">
 							<i class="bi bi-clock-history me-2"></i>最近访问记录
 						</button>
-					</li>
-					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="popular-books-tab" data-bs-toggle="tab" data-bs-target="#popular-books" type="button" role="tab">
+						<button class="list-group-item list-group-item-action" id="popular-books-tab" data-bs-toggle="tab" data-bs-target="#popular-books" type="button" role="tab">
 							<i class="bi bi-star me-2"></i>热门书籍
 						</button>
-					</li>
-					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="unpopular-books-tab" data-bs-toggle="tab" data-bs-target="#unpopular-books" type="button" role="tab">
+						<button class="list-group-item list-group-item-action" id="unpopular-books-tab" data-bs-toggle="tab" data-bs-target="#unpopular-books" type="button" role="tab">
 							<i class="bi bi-star-fill me-2"></i>冷门书籍
 						</button>
-					</li>
-					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="recently-visited-tab" data-bs-toggle="tab" data-bs-target="#recently-visited" type="button" role="tab">
+						<button class="list-group-item list-group-item-action" id="recently-visited-tab" data-bs-toggle="tab" data-bs-target="#recently-visited" type="button" role="tab">
 							<i class="bi bi-bookmark-heart me-2"></i>最近访问的书籍
 						</button>
-					</li>
-					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="visit-stats-tab" data-bs-toggle="tab" data-bs-target="#visit-stats" type="button" role="tab">
-							<i class="bi bi-graph-up me-2"></i>访问统计
+						<button class="list-group-item list-group-item-action" id="visit-stats-tab" data-bs-toggle="tab" data-bs-target="#visit-stats" type="button" role="tab">
+							<i class="bi bi-book me-2"></i>被遗忘的书籍
 						</button>
-					</li>
-					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="time-analysis-tab" data-bs-toggle="tab" data-bs-target="#time-analysis" type="button" role="tab">
-							<i class="bi bi-calendar3 me-2"></i>时间分析
-						</button>
-					</li>
-					<li class="nav-item" role="presentation">
-						<button class="nav-link" id="user-patterns-tab" data-bs-toggle="tab" data-bs-target="#user-patterns" type="button" role="tab">
-							<i class="bi bi-person-lines-fill me-2"></i>用户模式
-						</button>
-					</li>
-				</ul>
+					</div>
+				</div>
 			</div>
-			<div class="card-body">
-				<div class="tab-content" id="visitTabsContent">
+			
+			<!-- Main Content Area -->
+			<div class="col-md-9">
+				<div class="card">
+					<div class="card-body">
+						<div class="tab-content" id="visitTabsContent">
 						{% if error is defined and error %}
 							<div class="alert alert-danger" role="alert">
 								<i class="bi bi-exclamation-triangle"></i>
@@ -415,31 +407,77 @@
 
 							<!-- Visit Stats Tab -->
 							<div class="tab-pane fade" id="visit-stats" role="tabpanel">
-								<div class="text-center py-5">
-									<i class="bi bi-graph-up display-4 text-muted"></i>
-									<h4 class="mt-3">访问统计数据</h4>
-									<p class="text-muted">正在加载访问统计分析...</p>
-								</div>
-							</div>
-
-							<!-- Time Analysis Tab -->
-							<div class="tab-pane fade" id="time-analysis" role="tabpanel">
-								<div class="text-center py-5">
-									<i class="bi bi-calendar3 display-4 text-muted"></i>
-									<h4 class="mt-3">时间分析数据</h4>
-									<p class="text-muted">正在加载时间分析报告...</p>
-								</div>
-							</div>
-
-							<!-- User Patterns Tab -->
-							<div class="tab-pane fade" id="user-patterns" role="tabpanel">
-								<div class="text-center py-5">
-									<i class="bi bi-person-lines-fill display-4 text-muted"></i>
-									<h4 class="mt-3">用户模式数据</h4>
-									<p class="text-muted">正在加载用户行为模式...</p>
-								</div>
+								{% if datasets.forgotten_books is defined and datasets.forgotten_books.success and datasets.forgotten_books.data is not empty %}
+									<div class="mb-3">
+										<h6 class="text-muted">
+											<i class="bi bi-graph-up"></i>
+											被遗忘的书籍 ({{ datasets.forgotten_books.data|length }} 本)
+										</h6>
+									</div>
+									<div class="table-responsive">
+										<table class="table table-hover">
+											<thead class="table-light">
+												<tr>
+													<th scope="col">书名</th>
+													<th scope="col">作者</th>
+													<th scope="col">最后访问时间</th>
+													<th scope="col">天数</th>
+													<th scope="col">位置</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for book in datasets.forgotten_books.data %}
+													<tr>
+														<td>
+															<a href="{{ path('book_details', {'bookId': book.bookid}) }}" class="text-decoration-none fw-medium">
+																{{ book.title }}
+															</a>
+														</td>
+														<td>
+															{% if book.author is defined and book.author %}
+																<small class="text-muted">{{ book.author }}</small>
+															{% else %}
+																<small class="text-muted">未知作者</small>
+															{% endif %}
+														</td>
+														<td>
+															{% if book.lastVisited is defined and book.lastVisited is not null %}
+																<small class="text-muted">
+																	<i class="bi bi-clock"></i> {{ book.lastVisited|date('Y-m-d H:i') }}
+																</small>
+															{% else %}
+																<small class="text-muted">从未访问</small>
+															{% endif %}
+														</td>
+														<td>
+															{% if book.daysSinceVisit is defined and book.daysSinceVisit is not null %}
+																<span class="text-muted">{{ book.daysSinceVisit }} 天</span>
+															{% else %}
+																<span class="text-muted">-</span>
+															{% endif %}
+														</td>
+														<td>
+															{% if book.location is defined and book.location %}
+																<small class="text-muted">{{ book.location }}</small>
+															{% else %}
+																<small class="text-muted">未知位置</small>
+															{% endif %}
+														</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								{% else %}
+									<div class="text-center py-5">
+										<i class="bi bi-graph-up display-4 text-muted"></i>
+										<h4 class="mt-3">被遗忘的书籍</h4>
+										<p class="text-muted">暂无被遗忘的书籍数据，或者所有书籍都有最近的访问记录。</p>
+									</div>
+								{% endif %}
 							</div>
 						{% endif %}
+						</div>
 					</div>
 				</div>
 			</div>
