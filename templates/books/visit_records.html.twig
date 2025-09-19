@@ -8,7 +8,114 @@
 {% block javascripts %}
 	{{ parent() }}
 	<!-- Chart.js CDN -->
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+	
+	<script>
+		let chartInitialized = false;
+
+		function initializeChart() {
+			if (chartInitialized) return;
+			
+			const canvas = document.getElementById('visitHistoryChart');
+			if (!canvas) return;
+
+			const ctx = canvas.getContext('2d');
+			
+			{% if datasets.visit_history.data is defined and datasets.visit_history.data is not empty %}
+				const visitHistoryData = {{ datasets.visit_history.data|json_encode|raw }};
+				const labels = visitHistoryData.map(item => item.date);
+				const values = visitHistoryData.map(item => item.visit_count);
+
+				if (labels.length === 0) {
+					canvas.style.display = 'none';
+					return;
+				}
+
+				new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: '访问次数',
+							data: values,
+							borderColor: 'rgb(75, 192, 192)',
+							backgroundColor: 'rgba(75, 192, 192, 0.2)',
+							tension: 0.1
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						scales: {
+							y: {
+								beginAtZero: true,
+								ticks: {
+									stepSize: 1
+								}
+							}
+						}
+					}
+				});
+			{% else %}
+				// Show 'no data' chart
+				new Chart(ctx, {
+					type: 'line',
+					data: {
+						labels: ['无数据'],
+						datasets: [{
+							label: '访问次数',
+							data: [0],
+							borderColor: 'rgb(75, 192, 192)',
+							backgroundColor: 'rgba(75, 192, 192, 0.2)',
+							tension: 0.1
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						scales: {
+							y: {
+								beginAtZero: true,
+								max: 1
+							}
+						}
+					}
+				});
+			{% endif %}
+			
+			chartInitialized = true;
+		}
+
+		function initializeChartSystem() {
+			// Check if Chart.js is loaded
+			if (typeof Chart === 'undefined') {
+				setTimeout(initializeChartSystem, 100);
+				return;
+			}
+
+			// Check if DOM is ready
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', initializeChartSystem);
+				return;
+			}
+
+			// Check if the chart tab is already active
+			const chartTab = document.querySelector('#recent-visits-tab');
+			if (chartTab && chartTab.classList.contains('active')) {
+				setTimeout(initializeChart, 100);
+			}
+
+			// Listen for tab show events
+			document.addEventListener('shown.bs.tab', function(event) {
+				if (event.target.id === 'recent-visits-tab') {
+					setTimeout(initializeChart, 50);
+				}
+			});
+		}
+
+		// Start the initialization process
+		initializeChartSystem();
+	</script>
 {% endblock %}
 
 {% block body %}
@@ -24,77 +131,57 @@
 			</div>
 		</div>
 
-		<!-- Main Content with Left Navigation and Right Data Panel -->
-		<div class="row">
-			<!-- Left Navigation Panel -->
-			<div class="col-md-3">
-				<div class="card h-100">
-					<div class="card-header">
-						<h5 class="mb-0">
-							<i class="bi bi-list-ul"></i>
-							数据视图
-						</h5>
-					</div>
-					<div class="card-body p-0">
-						<div class="list-group list-group-flush">
-							<a href="#recent-visits" class="list-group-item list-group-item-action active" data-dataset="recent">
-								<i class="bi bi-clock-history me-2"></i>
-								最近访问记录
-								<small class="text-muted d-block">看看大家最近在看啥书</small>
-							</a>
-							<a href="#popular-books" class="list-group-item list-group-item-action" data-dataset="popular">
-								<i class="bi bi-star me-2"></i>
-								热门书籍
-								<small class="text-muted d-block">Popular Books</small>
-							</a>
-							<a href="#unpopular-books" class="list-group-item list-group-item-action" data-dataset="unpopular">
-								<i class="bi bi-star-fill me-2"></i>
-								冷门书籍
-								<small class="text-muted d-block">Unpopular Books</small>
-							</a>
-							<a href="#recently-visited" class="list-group-item list-group-item-action" data-dataset="recently_visited">
-								<i class="bi bi-bookmark-heart me-2"></i>
-								最近访问的书籍
-								<small class="text-muted d-block">Recently Visited Books</small>
-							</a>
-							<a href="#visit-stats" class="list-group-item list-group-item-action" data-dataset="stats">
-								<i class="bi bi-graph-up me-2"></i>
-								访问统计
-								<small class="text-muted d-block">Visit Statistics</small>
-							</a>
-							<a href="#time-analysis" class="list-group-item list-group-item-action" data-dataset="time">
-								<i class="bi bi-calendar3 me-2"></i>
-								时间分析
-								<small class="text-muted d-block">Time Analysis</small>
-							</a>
-							<a href="#user-patterns" class="list-group-item list-group-item-action" data-dataset="patterns">
-								<i class="bi bi-person-lines-fill me-2"></i>
-								用户模式
-								<small class="text-muted d-block">User Patterns</small>
-							</a>
-						</div>
-					</div>
-				</div>
+		<!-- Bootstrap Nav Tabs Layout -->
+		<div class="card">
+			<div class="card-header">
+				<ul class="nav nav-tabs card-header-tabs" id="visitTabs" role="tablist">
+					<li class="nav-item" role="presentation">
+						<button class="nav-link active" id="recent-visits-tab" data-bs-toggle="tab" data-bs-target="#recent-visits" type="button" role="tab">
+							<i class="bi bi-clock-history me-2"></i>最近访问记录
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="popular-books-tab" data-bs-toggle="tab" data-bs-target="#popular-books" type="button" role="tab">
+							<i class="bi bi-star me-2"></i>热门书籍
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="unpopular-books-tab" data-bs-toggle="tab" data-bs-target="#unpopular-books" type="button" role="tab">
+							<i class="bi bi-star-fill me-2"></i>冷门书籍
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="recently-visited-tab" data-bs-toggle="tab" data-bs-target="#recently-visited" type="button" role="tab">
+							<i class="bi bi-bookmark-heart me-2"></i>最近访问的书籍
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="visit-stats-tab" data-bs-toggle="tab" data-bs-target="#visit-stats" type="button" role="tab">
+							<i class="bi bi-graph-up me-2"></i>访问统计
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="time-analysis-tab" data-bs-toggle="tab" data-bs-target="#time-analysis" type="button" role="tab">
+							<i class="bi bi-calendar3 me-2"></i>时间分析
+						</button>
+					</li>
+					<li class="nav-item" role="presentation">
+						<button class="nav-link" id="user-patterns-tab" data-bs-toggle="tab" data-bs-target="#user-patterns" type="button" role="tab">
+							<i class="bi bi-person-lines-fill me-2"></i>用户模式
+						</button>
+					</li>
+				</ul>
 			</div>
-
-			<!-- Right Data Display Panel -->
-			<div class="col-md-9">
-				<div class="card h-100">
-					<div class="card-header d-flex justify-content-between align-items-center">
-						<h5 class="mb-0" id="data-panel-title">
-							<i class="bi bi-clock-history"></i>
-							最近访问记录
-						</h5>
-					</div>
-					<div class="card-body" id="data-content">
+			<div class="card-body">
+				<div class="tab-content" id="visitTabsContent">
 						{% if error is defined and error %}
 							<div class="alert alert-danger" role="alert">
 								<i class="bi bi-exclamation-triangle"></i>
 								{{ error }}
 							</div>
 						{% else %}
-							<!-- Default: Recent Visit Records -->
-							<div id="recent-visits-content" class="data-panel active">
+							<!-- Tab Panes -->
+							<div class="tab-pane fade show active" id="recent-visits" role="tabpanel">
 								<!-- Visit Statistics Summary -->
 								{% if datasets.visit_history is defined and datasets.visit_history.period_info is defined %}
 									<div class="row mb-4">
@@ -128,7 +215,7 @@
 								<!-- Visit History Chart -->
 								<div class="mb-4">
 									<h5>过去30天访问统计</h5>
-									<div class="chart-container" style="height: 300px;">
+									<div class="chart-container" style="height: 300px;" id="chart-container">
 										<canvas id="visitHistoryChart"></canvas>
 									</div>
 								</div>
@@ -141,65 +228,68 @@
 								{% endif %}
 							</div>
 
-							<!-- Placeholder for other datasets -->
-							<div id="popular-books-content" class="data-panel d-none">
-								{% if datasets.popular_books is defined and datasets.popular_books.success and datasets.popular_books.data is not empty %}
-									<div class="table-responsive">
-										<table class="table table-hover">
-											<thead class="table-light">
-												<tr>
-													<th scope="col">书名</th>
-													<th scope="col">访问次数</th>
-													<th scope="col">最后访问</th>
-													<th scope="col">位置</th>
-												</tr>
-											</thead>
-											<tbody>
-												{% for book in datasets.popular_books.data %}
+							<!-- Popular Books Tab -->
+							<div class="tab-pane fade" id="popular-books" role="tabpanel">
+								<div class="data-content">
+									{% if datasets.popular_books is defined and datasets.popular_books.success and datasets.popular_books.data is not empty %}
+										<div class="table-responsive">
+											<table class="table table-hover">
+												<thead class="table-light">
 													<tr>
-														<td>
-															<a href="{{ path('book_details', {'bookId': book.bookid}) }}" class="text-decoration-none fw-medium">
-																{{ book.title }}
-															</a>
-														</td>
-														<td>
-															{% if book.totalVisits is defined and book.totalVisits %}
-																{{ book.totalVisits|number_format }}
-															{% else %}
-																<span class="text-muted">-</span>
-															{% endif %}
-														</td>
-														<td>
-															{% if book.lastVisited is defined and book.lastVisited %}
-																<small class="text-muted">
-																	<i class="bi bi-clock"></i> {{ book.lastVisited|date('Y-m-d H:i') }}
-																</small>
-															{% else %}
-																<small class="text-muted">未访问</small>
-															{% endif %}
-														</td>
-														<td>
-															{% if book.location is defined and book.location %}
-																<small class="text-muted">{{ book.location }}</small>
-															{% else %}
-																<small class="text-muted">未知位置</small>
-															{% endif %}
-														</td>
+														<th scope="col">书名</th>
+														<th scope="col">访问次数</th>
+														<th scope="col">最后访问</th>
+														<th scope="col">位置</th>
 													</tr>
-												{% endfor %}
-											</tbody>
-										</table>
-									</div>
-								{% else %}
-									<div class="text-center py-5">
-										<i class="bi bi-star display-4 text-muted"></i>
-										<h4 class="mt-3">热门书籍数据</h4>
-										<p class="text-muted">暂无热门书籍数据，开始浏览书籍后数据将会显示在这里。</p>
-									</div>
-								{% endif %}
+												</thead>
+												<tbody>
+													{% for book in datasets.popular_books.data %}
+														<tr>
+															<td>
+																<a href="{{ path('book_details', {'bookId': book.bookid}) }}" class="text-decoration-none fw-medium">
+																	{{ book.title }}
+																</a>
+															</td>
+															<td>
+																{% if book.totalVisits is defined and book.totalVisits %}
+																	{{ book.totalVisits|number_format }}
+																{% else %}
+																	<span class="text-muted">-</span>
+																{% endif %}
+															</td>
+															<td>
+																{% if book.lastVisited is defined and book.lastVisited %}
+																	<small class="text-muted">
+																		<i class="bi bi-clock"></i> {{ book.lastVisited|date('Y-m-d H:i') }}
+																	</small>
+																{% else %}
+																	<small class="text-muted">未访问</small>
+																{% endif %}
+															</td>
+															<td>
+																{% if book.location is defined and book.location %}
+																	<small class="text-muted">{{ book.location }}</small>
+																{% else %}
+																	<small class="text-muted">未知位置</small>
+																{% endif %}
+															</td>
+														</tr>
+													{% endfor %}
+												</tbody>
+											</table>
+										</div>
+									{% else %}
+										<div class="text-center py-5">
+											<i class="bi bi-star display-4 text-muted"></i>
+											<h4 class="mt-3">热门书籍</h4>
+											<p class="text-muted">暂无热门书籍数据，开始浏览书籍后数据将会显示在这里。</p>
+										</div>
+									{% endif %}
+								</div>
 							</div>
 
-							<div id="unpopular-books-content" class="data-panel d-none">
+							<!-- Unpopular Books Tab -->
+							<div class="tab-pane fade" id="unpopular-books" role="tabpanel">
 								{% if datasets.unpopular_books is defined and datasets.unpopular_books.success and datasets.unpopular_books.data is not empty %}
 									<div class="table-responsive">
 										<table class="table table-hover">
@@ -256,8 +346,8 @@
 								{% endif %}
 							</div>
 
-							<!-- Recently Visited Books Panel -->
-							<div id="recently-visited-content" class="data-panel d-none">
+							<!-- Recently Visited Books Tab -->
+							<div class="tab-pane fade" id="recently-visited" role="tabpanel">
 								{% if datasets.recently_visited is defined and datasets.recently_visited.success and datasets.recently_visited.data|length > 0 %}
 									<div class="mb-3">
 										<h6 class="text-muted">
@@ -323,7 +413,8 @@
 								{% endif %}
 							</div>
 
-							<div id="visit-stats-content" class="data-panel d-none">
+							<!-- Visit Stats Tab -->
+							<div class="tab-pane fade" id="visit-stats" role="tabpanel">
 								<div class="text-center py-5">
 									<i class="bi bi-graph-up display-4 text-muted"></i>
 									<h4 class="mt-3">访问统计数据</h4>
@@ -331,7 +422,8 @@
 								</div>
 							</div>
 
-							<div id="time-analysis-content" class="data-panel d-none">
+							<!-- Time Analysis Tab -->
+							<div class="tab-pane fade" id="time-analysis" role="tabpanel">
 								<div class="text-center py-5">
 									<i class="bi bi-calendar3 display-4 text-muted"></i>
 									<h4 class="mt-3">时间分析数据</h4>
@@ -339,7 +431,8 @@
 								</div>
 							</div>
 
-							<div id="user-patterns-content" class="data-panel d-none">
+							<!-- User Patterns Tab -->
+							<div class="tab-pane fade" id="user-patterns" role="tabpanel">
 								<div class="text-center py-5">
 									<i class="bi bi-person-lines-fill display-4 text-muted"></i>
 									<h4 class="mt-3">用户模式数据</h4>
@@ -352,143 +445,4 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- Chart.js Library -->
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	
-	<!-- JavaScript for Panel Switching -->
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			// Navigation panel switching
-			const navItems = document.querySelectorAll('.list-group-item[data-dataset]');
-			const dataPanels = document.querySelectorAll('.data-panel');
-			const panelTitle = document.getElementById('data-panel-title');
-
-			navItems.forEach(item => {
-				item.addEventListener('click', function(e) {
-					e.preventDefault();
-					
-					// Remove active class from all nav items
-					navItems.forEach(nav => nav.classList.remove('active'));
-					// Add active class to clicked item
-					this.classList.add('active');
-					
-					// Hide all data panels
-					dataPanels.forEach(panel => panel.classList.add('d-none'));
-					dataPanels.forEach(panel => panel.classList.remove('active'));
-					
-					// Show selected panel
-					const dataset = this.getAttribute('data-dataset');
-					const targetPanel = document.getElementById(dataset === 'recent' ? 'recent-visits-content' : 
-																dataset === 'popular' ? 'popular-books-content' :
-																dataset === 'unpopular' ? 'unpopular-books-content' :
-																dataset === 'recently_visited' ? 'recently-visited-content' :
-																dataset === 'stats' ? 'visit-stats-content' :
-																dataset === 'time' ? 'time-analysis-content' :
-																'user-patterns-content');
-					
-					if (targetPanel) {
-						targetPanel.classList.remove('d-none');
-						targetPanel.classList.add('active');
-					}
-					
-					// Update panel title
-					const icon = this.querySelector('i').className;
-					const title = this.textContent.trim().split('\n')[0];
-					panelTitle.innerHTML = `<i class="${icon}"></i> ${title}`;
-				});
-			});
-
-			// View switching (table/cards)
-			const viewButtons = document.querySelectorAll('[data-view]');
-			viewButtons.forEach(button => {
-				button.addEventListener('click', function() {
-					const view = this.getAttribute('data-view');
-					const tableView = document.getElementById('table-view');
-					const cardsView = document.getElementById('cards-view');
-					
-					// Remove active class from all view buttons
-					viewButtons.forEach(btn => btn.classList.remove('active'));
-					this.classList.add('active');
-					
-					if (view === 'table') {
-						tableView.classList.remove('d-none');
-						cardsView.classList.add('d-none');
-					} else {
-						tableView.classList.add('d-none');
-						cardsView.classList.remove('d-none');
-					}
-				});
-			});
-
-			// Chart initialization
-			const chartElement = document.getElementById('visitHistoryChart');
-			if (chartElement) {
-				{% if datasets.visit_history.data is defined and datasets.visit_history.data is not empty %}
-					const visitHistoryData = {{ datasets.visit_history.data|json_encode|raw }};
-					
-					// Process data for Chart.js
-					const labels = [];
-					const values = [];
-					
-					// Handle different API response formats
-					if (Array.isArray(visitHistoryData)) {
-						visitHistoryData.forEach(item => {
-							if (item.date && item.visit_count !== undefined) {
-								labels.push(item.date);
-								values.push(item.visit_count);
-							}
-						});
-					}
-
-					new Chart(chartElement, {
-						type: 'line',
-						data: {
-							labels: labels,
-							datasets: [{
-								label: '访问次数',
-								data: values,
-								borderColor: 'rgb(75, 192, 192)',
-								backgroundColor: 'rgba(75, 192, 192, 0.2)',
-								tension: 0.1
-							}]
-						},
-						options: {
-							responsive: true,
-							maintainAspectRatio: false,
-							scales: {
-								y: {
-									beginAtZero: true
-								}
-							}
-						}
-					});
-				{% else %}
-					// Show placeholder chart for no data
-					new Chart(chartElement, {
-						type: 'line',
-						data: {
-							labels: ['无数据'],
-							datasets: [{
-								label: '访问次数',
-								data: [0],
-								borderColor: 'rgb(200, 200, 200)',
-								backgroundColor: 'rgba(200, 200, 200, 0.2)',
-							}]
-						},
-						options: {
-							responsive: true,
-							maintainAspectRatio: false,
-							scales: {
-								y: {
-									beginAtZero: true,
-									max: 1
-								}
-							}
-						}
-					});
-				{% endif %}
-			}
-		});
-	</script>
 {% endblock %}
