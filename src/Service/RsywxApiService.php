@@ -667,6 +667,11 @@ class RsywxApiService
                     'method' => 'GET',
                     'endpoint' => '/books/unpopular/20',
                     'queryParams' => ['refresh' => $refresh ? 'true' : 'false']
+                ],
+                'recently_visited' => [
+                    'method' => 'GET',
+                    'endpoint' => '/books/last_visited/20',
+                    'queryParams' => []
                 ]
             ];
 
@@ -723,6 +728,23 @@ class RsywxApiService
                 ];
             }
 
+            // Process recently visited books
+            if (isset($responses['recently_visited']) && $responses['recently_visited']['success']) {
+                $recentlyVisitedData = array_map(fn($bookData) => Book::fromArray($bookData), $responses['recently_visited']['data']);
+                $datasets['recently_visited'] = [
+                    'success' => true,
+                    'data' => $recentlyVisitedData,
+                    'cached' => $responses['recently_visited']['cached'] ?? false
+                ];
+            } else {
+                $this->logger->warning('Recently visited books request failed in parallel execution');
+                $datasets['recently_visited'] = [
+                    'success' => false,
+                    'data' => [],
+                    'cached' => false
+                ];
+            }
+
             return [
                 'datasets' => $datasets
             ];
@@ -749,6 +771,11 @@ class RsywxApiService
                         'cached' => false
                     ],
                     'unpopular_books' => [
+                        'success' => false,
+                        'data' => [],
+                        'cached' => false
+                    ],
+                    'recently_visited' => [
                         'success' => false,
                         'data' => [],
                         'cached' => false
