@@ -212,31 +212,7 @@ class BookController extends AbstractController
         }
     }
 
-    /**
-     * Display popular books (most visited)
-     */
-    public function popular(Request $request, int $count = 20): Response
-    {
-        try {
-            $refresh = $request->query->getBoolean('refresh', false);
-            
-            $books = $this->apiService->getPopularBooks($count, $refresh);
 
-            return $this->render('books/list.html.twig', [
-                'title' => 'Popular Books',
-                'books' => $books,
-                'show_visit_info' => true,
-            ]);
-        } catch (\Exception $e) {
-            $this->logger->error('Failed to load popular books: ' . $e->getMessage());
-            
-            return $this->render('books/list.html.twig', [
-                'title' => 'Popular Books',
-                'books' => [],
-                'error' => 'Unable to load popular books. Please try again later.',
-            ]);
-        }
-    }
 
     /**
      * Display forgotten books
@@ -266,6 +242,7 @@ class BookController extends AbstractController
     }
 
     /**
+     * Display unpopular books (least visited)
      * Display books purchased today (or on specific date)
      */
     public function today(?int $month = null, ?int $date = null, Request $request): Response
@@ -409,7 +386,7 @@ class BookController extends AbstractController
     public function visitRecords(): Response
     {
         try {
-            // Get visit records from API (now returns multiple datasets)
+            // Get visit records from API (now returns multiple datasets including unpopular books)
             $visitData = $this->apiService->getVisitRecords();
             
             return $this->render('books/visit_records.html.twig', [

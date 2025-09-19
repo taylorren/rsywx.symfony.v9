@@ -45,7 +45,12 @@
 							<a href="#popular-books" class="list-group-item list-group-item-action" data-dataset="popular">
 								<i class="bi bi-star me-2"></i>
 								热门书籍
-								<small class="text-muted d-block">哪些才是最热的书籍</small>
+								<small class="text-muted d-block">Popular Books</small>
+							</a>
+							<a href="#unpopular-books" class="list-group-item list-group-item-action" data-dataset="unpopular">
+								<i class="bi bi-star-fill me-2"></i>
+								冷门书籍
+								<small class="text-muted d-block">Unpopular Books</small>
 							</a>
 							<a href="#visit-stats" class="list-group-item list-group-item-action" data-dataset="stats">
 								<i class="bi bi-graph-up me-2"></i>
@@ -154,7 +159,7 @@
 														</td>
 														<td>
 															{% if book.totalVisits is defined and book.totalVisits %}
-																{{ book.totalVisits }}
+																{{ book.totalVisits|number_format }}
 															{% else %}
 																<span class="text-muted">-</span>
 															{% endif %}
@@ -185,6 +190,63 @@
 										<i class="bi bi-star display-4 text-muted"></i>
 										<h4 class="mt-3">热门书籍数据</h4>
 										<p class="text-muted">暂无热门书籍数据，开始浏览书籍后数据将会显示在这里。</p>
+									</div>
+								{% endif %}
+							</div>
+
+							<div id="unpopular-books-content" class="data-panel d-none">
+								{% if datasets.unpopular_books is defined and datasets.unpopular_books.success and datasets.unpopular_books.data is not empty %}
+									<div class="table-responsive">
+										<table class="table table-hover">
+											<thead class="table-light">
+												<tr>
+													<th scope="col">书名</th>
+													<th scope="col">访问次数</th>
+													<th scope="col">最后访问</th>
+													<th scope="col">位置</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for book in datasets.unpopular_books.data %}
+													<tr>
+														<td>
+															<a href="{{ path('book_details', {'bookId': book.bookid}) }}" class="text-decoration-none fw-medium">
+																{{ book.title }}
+															</a>
+														</td>
+														<td>
+															{% if book.totalVisits is defined and book.totalVisits is not null %}
+																{{ book.totalVisits|number_format }}
+															{% else %}
+																<span class="text-muted">0</span>
+															{% endif %}
+														</td>
+														<td>
+															{% if book.lastVisited is defined and book.lastVisited is not null %}
+																<small class="text-muted">
+																	<i class="bi bi-clock"></i> {{ book.lastVisited|date('Y-m-d H:i') }}
+																</small>
+															{% else %}
+																<small class="text-muted">未访问</small>
+															{% endif %}
+														</td>
+														<td>
+															{% if book.location is defined and book.location %}
+																<small class="text-muted">{{ book.location }}</small>
+															{% else %}
+																<small class="text-muted">未知位置</small>
+															{% endif %}
+														</td>
+													</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								{% else %}
+									<div class="text-center py-5">
+										<i class="bi bi-star-fill display-4 text-muted"></i>
+										<h4 class="mt-3">冷门书籍数据</h4>
+										<p class="text-muted">暂无冷门书籍数据，开始浏览书籍后数据将会显示在这里。</p>
 									</div>
 								{% endif %}
 							</div>
@@ -247,6 +309,7 @@
 					const dataset = this.getAttribute('data-dataset');
 					const targetPanel = document.getElementById(dataset === 'recent' ? 'recent-visits-content' : 
 																dataset === 'popular' ? 'popular-books-content' :
+																dataset === 'unpopular' ? 'unpopular-books-content' :
 																dataset === 'stats' ? 'visit-stats-content' :
 																dataset === 'time' ? 'time-analysis-content' :
 																'user-patterns-content');

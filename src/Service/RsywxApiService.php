@@ -290,6 +290,8 @@ class RsywxApiService
         }
     }
 
+
+
     /**
      * Get forgotten books (not visited recently)
      */
@@ -644,33 +646,95 @@ class RsywxApiService
     }
 
     /**
-     * Get visit records with multiple datasets for comprehensive analysis
+     * Get visit records with multiple datasets for comprehensive analysis using parallel fetching
      */
     public function getVisitRecords(int $limit = 50, bool $refresh = false): array
     {
         try {
-            // Dataset 1: Visit History Chart (Past 30 days)
-            $visitHistoryData = $this->getVisitHistory(30, $refresh);
-            
-            // Dataset 2: Popular Books (Top 20)
-            $popularBooks = $this->getPopularBooks(20, $refresh);
-            
-            return [
-                'datasets' => [
-                    'visit_history' => $visitHistoryData,
-                    'popular_books' => [
-                        'success' => true,
-                        'data' => $popularBooks,
-                        'cached' => false
-                    ]
+            // Define all API requests for parallel execution
+            $requests = [
+                'visit_history' => [
+                    'method' => 'GET',
+                    'endpoint' => '/books/visit_history',
+                    'queryParams' => []
+                ],
+                'popular_books' => [
+                    'method' => 'GET',
+                    'endpoint' => '/books/popular/20',
+                    'queryParams' => ['refresh' => $refresh ? 'true' : 'false']
+                ],
+                'unpopular_books' => [
+                    'method' => 'GET',
+                    'endpoint' => '/books/unpopular/20',
+                    'queryParams' => ['refresh' => $refresh ? 'true' : 'false']
                 ]
             ];
+
+            // Execute all requests in parallel
+            $responses = $this->makeParallelRequests($requests);
+
+            // Process each response with proper error handling
+            $datasets = [];
+
+            // Process visit history
+            if (isset($responses['visit_history']) && $responses['visit_history']['success']) {
+                $datasets['visit_history'] = $responses['visit_history'];
+            } else {
+                $this->logger->warning('Visit history request failed in parallel execution');
+                $datasets['visit_history'] = [
+                    'success' => false,
+                    'data' => [],
+                    'period_info' => null,
+                    'cached' => false
+                ];
+            }
+
+            // Process popular books
+            if (isset($responses['popular_books']) && $responses['popular_books']['success']) {
+                $popularBooksData = array_map(fn($bookData) => Book::fromArray($bookData), $responses['popular_books']['data']);
+                $datasets['popular_books'] = [
+                    'success' => true,
+                    'data' => $popularBooksData,
+                    'cached' => $responses['popular_books']['cached'] ?? false
+                ];
+            } else {
+                $this->logger->warning('Popular books request failed in parallel execution');
+                $datasets['popular_books'] = [
+                    'success' => false,
+                    'data' => [],
+                    'cached' => false
+                ];
+            }
+
+            // Process unpopular books
+            if (isset($responses['unpopular_books']) && $responses['unpopular_books']['success']) {
+                $unpopularBooksData = array_map(fn($bookData) => Book::fromArray($bookData), $responses['unpopular_books']['data']);
+                $datasets['unpopular_books'] = [
+                    'success' => true,
+                    'data' => $unpopularBooksData,
+                    'cached' => $responses['unpopular_books']['cached'] ?? false
+                ];
+            } else {
+                $this->logger->warning('Unpopular books request failed in parallel execution');
+                $datasets['unpopular_books'] = [
+                    'success' => false,
+                    'data' => [],
+                    'cached' => false
+                ];
+            }
+
+            return [
+                'datasets' => $datasets
+            ];
+
         } catch (\Exception $e) {
-            $this->logger->error('Failed to get visit records', [
+            $this->logger->error('Failed to get visit records with parallel execution', [
                 'limit' => $limit,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
+            
+            // Return fallback structure on complete failure
             return [
                 'datasets' => [
                     'visit_history' => [
@@ -680,6 +744,11 @@ class RsywxApiService
                         'cached' => false
                     ],
                     'popular_books' => [
+                        'success' => false,
+                        'data' => [],
+                        'cached' => false
+                    ],
+                    'unpopular_books' => [
                         'success' => false,
                         'data' => [],
                         'cached' => false

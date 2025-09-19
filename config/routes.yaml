@@ -49,13 +49,7 @@ books_recent:
     path: /books/recent
     controller: App\Controller\BookController::recent
 
-books_popular:
-    path: /books/popular/{count}
-    controller: App\Controller\BookController::popular
-    defaults:
-        count: 20
-    requirements:
-        count: '\d+'
+
 
 books_forgotten:
     path: /books/forgotten
