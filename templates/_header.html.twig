@@ -45,7 +45,7 @@
             </ul>
             
             <!-- Search Form -->
-            <form class="d-flex search-box" method="GET" action="{{ path('books_list', {key: 'misc', value: '__PLACEHOLDER__', page: 1}) }}" onsubmit="updateSearchAction(this)">
+            <form class="d-flex search-box" method="GET" action="{{ path('books_list', {key: 'misc', value: '__PLACEHOLDER__', page: 1}) }}" onsubmit="return updateSearchAction(this)">
                 <input class="form-control me-2" type="search" name="search_query" placeholder="搜索图书..." aria-label="搜索" required>
                 <button class="btn btn-outline-light" type="submit">
                     <i class="bi bi-search"></i>
@@ -57,9 +57,11 @@
                 const searchInput = form.querySelector('input[name="search_query"]');
                 const searchValue = searchInput.value.trim();
                 if (searchValue) {
-                    form.action = "{{ path('books_list', {key: 'misc', value: '__VALUE__', page: 1}) }}".replace('__VALUE__', encodeURIComponent(searchValue));
+                    const newUrl = "{{ path('books_list', {key: 'misc', value: '__VALUE__', page: 1}) }}".replace('__VALUE__', encodeURIComponent(searchValue));
+                    window.location.href = newUrl;
+                    return false; // Prevent default form submission
                 }
-                return true;
+                return false;
             }
             </script>
         </div>

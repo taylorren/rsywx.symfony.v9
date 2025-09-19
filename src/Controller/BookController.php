@@ -309,8 +309,16 @@ class BookController extends AbstractController
             // Call API service to get filtered books using existing endpoint
             $result = $this->apiService->getBooksList($key, $value, $page);
             
-            if (!$result) {
-                // Return empty result page instead of error
+            // Check if result is null or has empty data
+            $hasNoResults = !$result || empty($result['data']);
+            
+            if ($hasNoResults) {
+                // If this is a search query (value is not '-'), throw 404
+                if ($value !== '-') {
+                    throw new NotFoundHttpException('No books found matching your search criteria');
+                }
+                
+                // For general browsing (value is '-'), return empty result page
                 return $this->render('books/list.html.twig', [
                     'books' => [],
                     'pagination' => null,

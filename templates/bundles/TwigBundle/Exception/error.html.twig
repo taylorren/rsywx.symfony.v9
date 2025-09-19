@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}错误 {{ status_code }} - RSYWX Library{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row min-vh-100 align-items-center justify-content-center">
+        <div class="col-lg-6 col-xl-5 text-center">
+            <!-- Error Icon -->
+            <div class="mb-4">
+                <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 6rem;"></i>
+            </div>
+            
+            <!-- Error Message -->
+            <div class="mb-4">
+                <h1 class="display-3 fw-bold text-primary mb-3">{{ status_code }}</h1>
+                <h2 class="h3 mb-3">{{ status_text }}</h2>
+                <p class="lead text-muted mb-4">
+                    抱歉，服务器遇到了一个错误。<br>
+                    请稍后再试或联系管理员。
+                </p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                <a href="{{ path('app_home') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-house-door me-2"></i>
+                    返回首页
+                </a>
+                <button type="button" class="btn btn-outline-secondary btn-lg" onclick="history.back()">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    返回上页
+                </button>
+            </div>
+            
+            <!-- Help Links -->
+            <div class="mt-4">
+                <p class="text-muted small">
+                    需要帮助？
+                    <a href="{{ path('about') }}" class="text-decoration-none">联系我们</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .min-vh-100 {
+        min-height: calc(100vh - 76px) !important; /* 减去导航栏高度 */
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 576px) {
+        .display-3 {
+            font-size: 3rem;
+        }
+        
+        .btn-lg {
+            width: 100%;
+        }
+    }
+    
+    /* 深色主题适配 */
+    [data-bs-theme="dark"] .text-muted {
+        color: var(--bs-gray-400) !important;
+    }
+</style>
+{% endblock %}

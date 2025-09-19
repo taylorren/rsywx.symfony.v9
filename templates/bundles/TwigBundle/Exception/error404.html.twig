@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}页面未找到 - RSYWX Library{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row min-vh-100 align-items-center justify-content-center">
+        <div class="col-lg-8 col-xl-6 text-center">
+            <!-- 404 SVG Illustration -->
+            <div class="mb-4">
+                <img src="{{ asset('images/404.svg') }}" 
+                     alt="404 页面未找到" 
+                     class="img-fluid" 
+                     style="max-width: 500px; width: 100%;">
+            </div>
+            
+            <!-- Error Message -->
+            <div class="mb-4">
+                <h1 class="display-1 fw-bold text-primary mb-3">404</h1>
+                <h2 class="h3 mb-3">页面未找到</h2>
+                <p class="lead text-muted mb-4">
+                    抱歉，您访问的页面不存在或已被移动。<br>
+                    让我们帮您找到正确的路径。
+                </p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                <a href="{{ path('app_home') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-house-door me-2"></i>
+                    返回首页
+                </a>
+                <a href="{{ path('books_list', {key: 'title', value: '-', page: 1}) }}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-book me-2"></i>
+                    浏览图书
+                </a>
+                <button type="button" class="btn btn-outline-secondary btn-lg" onclick="history.back()">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    返回上页
+                </button>
+            </div>
+            
+            <!-- Search Box -->
+            <div class="mt-5">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="bi bi-search me-2"></i>
+                            搜索图书
+                        </h5>
+                        <form action="{{ path('books_list', {key: 'misc', value: '__PLACEHOLDER__', page: 1}) }}" method="GET" class="d-flex gap-2" onsubmit="return updateSearchAction(this)">
+                            <input type="search" name="search_query" class="form-control" placeholder="搜索图书标题、作者..." required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i>
+                                搜索
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Help Links -->
+            <div class="mt-4">
+                <p class="text-muted small">
+                    需要帮助？
+                    <a href="{{ path('about') }}" class="text-decoration-none">联系我们</a>
+                    或
+                    <a href="{{ path('app_home') }}" class="text-decoration-none">查看网站地图</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateSearchAction(form) {
+    const searchInput = form.querySelector('input[name="search_query"]');
+    const searchValue = searchInput.value.trim();
+    if (searchValue) {
+        const newUrl = "{{ path('books_list', {key: 'misc', value: '__VALUE__', page: 1}) }}".replace('__VALUE__', encodeURIComponent(searchValue));
+        window.location.href = newUrl;
+        return false; // Prevent default form submission
+    }
+    return false;
+}
+</script>
+
+<style>
+    .min-vh-100 {
+        min-height: calc(100vh - 76px) !important; /* 减去导航栏高度 */
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 576px) {
+        .display-1 {
+            font-size: 4rem;
+        }
+        
+        .btn-lg {
+            width: 100%;
+        }
+    }
+    
+    /* 深色主题适配 */
+    [data-bs-theme="dark"] .card {
+        background-color: var(--bs-dark);
+        border-color: var(--bs-gray-700) !important;
+    }
+    
+    [data-bs-theme="dark"] .text-muted {
+        color: var(--bs-gray-400) !important;
+    }
+</style>
+{% endblock %}
