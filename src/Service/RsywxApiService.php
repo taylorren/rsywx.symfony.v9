@@ -849,4 +849,56 @@ class RsywxApiService
             return null;
         }
     }
+    
+    /**
+     * Get reading reviews with pagination
+     */
+    public function getReadingReviews(int $page = 1, bool $refresh = false): array
+    {
+        try {
+            $response = $this->makeRequestWithRetry('GET', "/readings/reviews/{$page}", [
+                'refresh' => $refresh
+            ]);
+            
+            // Extract data from API response structure
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($bookData) => Book::fromArray($bookData), $response['data']);
+            }
+            
+            return [];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get reading reviews', [
+                'page' => $page,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
+    }
+    
+    /**
+     * Get reading reviews with full pagination data
+     */
+    public function getReadingReviewsWithPagination(int $page = 1, bool $refresh = false): array
+    {
+        try {
+            $response = $this->makeRequestWithRetry('GET', "/readings/reviews/{$page}", [
+                'refresh' => $refresh
+            ]);
+            
+            // Return the full response to include pagination info if available
+            return $response ?: [];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get reading reviews with pagination', [
+                'page' => $page,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [
+                'success' => false,
+                'data' => [],
+                'pagination' => null
+            ];
+        }
+    }
 }

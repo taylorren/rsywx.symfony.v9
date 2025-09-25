@@ -88,6 +88,11 @@ books_today:
     controller: App\Controller\BookController::todaysBooks
     methods: [GET]
 
+# Reading routes
+reading_index:
+    path: /reading
+    controller: App\Controller\ReadingController::index
+
 # Turbo frame routes
 book_tags_frame:
     path: /books/{bookId}/tags-frame
