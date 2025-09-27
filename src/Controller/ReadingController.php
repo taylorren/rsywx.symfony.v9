@@ -19,11 +19,9 @@ class ReadingController extends AbstractController
     /**
      * Display reading page with book reviews and covers
      */
-    #[Route('/reading', name: 'reading_index', methods: ['GET'])]
-    public function index(Request $request): Response
+    public function index(Request $request, int $page = 1): Response
     {
         try {
-            $page = $request->query->getInt('page', 1);
             $refresh = $request->query->getBoolean('refresh', false);
             
             // Use the proper API method for reading reviews with pagination

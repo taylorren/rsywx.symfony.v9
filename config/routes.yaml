@@ -90,6 +90,14 @@ books_today:
 
 # Reading routes
 reading_index:
+    path: /reading/{page}
+    controller: App\Controller\ReadingController::index
+    defaults:
+        page: 1
+    requirements:
+        page: '\d+'
+
+reading_index_default:
     path: /reading
     controller: App\Controller\ReadingController::index
 
