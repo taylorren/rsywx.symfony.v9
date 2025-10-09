@@ -151,7 +151,7 @@
                         {% if book.intro %}
                         <hr>
                         <h6 class="mb-3"><i class="bi bi-chat-text"></i> 简介</h6>
-                        <div class="alert alert-secondary">
+                        <div class="alert alert-secondary book-intro">
                             <p class="mb-0">{{ book.intro }}</p>
                         </div>
                         {% endif %}
@@ -290,6 +290,79 @@
         </div>
     </div>
 </div>
+
+<style>
+/* Print styles for book details */
+@media print {
+  /* Hide navigation, alerts, modals, and buttons */
+  .navbar,
+  .alert:not(.book-intro),
+  .modal,
+  .btn,
+  .card-header,
+  .card-footer,
+  .d-print-none,
+  [data-bs-toggle],
+  [data-bs-dismiss] {
+    display: none !important;
+  }
+
+  /* Always show the intro section in print */
+  .book-intro {
+    display: block !important;
+  }
+
+  /* Hide turbo-frames for tags editing */
+  turbo-frame,
+  #addTagsModal {
+    display: none !important;
+  }
+
+  /* Hide reviews section if not needed in print */
+  .card-body.border-top {
+    display: none !important;
+  }
+
+  /* Remove box shadows and background colors for a clean print */
+  .card,
+  .bg-secondary,
+  .shadow {
+    box-shadow: none !important;
+    background: #fff !important;
+  }
+
+  /* Make sure book cover is visible and centered */
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto !important;
+  }
+
+  /* Remove margins and paddings for compact print */
+  .container,
+  .row,
+  .col-lg-6,
+  .col-md-6,
+  .mb-4,
+  .mb-3,
+  .mb-2 {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Make text black for print */
+  body, .text-muted, .text-dark, .text-secondary {
+    color: #000 !important;
+    background: #fff !important;
+  }
+
+  /* Hide footer if present */
+  footer {
+    display: none !important;
+  }
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
