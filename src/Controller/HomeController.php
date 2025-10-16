@@ -92,6 +92,9 @@ final class HomeController extends AbstractController
                 ? $latestReadingsData['data']
                 : [];
 
+            // Fetch today's blog posts
+            $todaysBlogPosts = $this->apiService->getTodaysBlogPosts($refresh);
+
             return $this->render('home/index.html.twig', [
                 'stats' => $stats,
                 'latest_books' => $latestBooks,
@@ -102,6 +105,7 @@ final class HomeController extends AbstractController
                 'quote_of_the_day' => $quoteOfTheDay,
                 'readingSummary' => $readingSummary,
                 'latestReadings' => $latestReadings,
+                'todays_blog_posts' => $todaysBlogPosts,
             ]);
         } catch (\Exception $e) {
             $this->logger->error('Failed to load homepage: ' . $e->getMessage());

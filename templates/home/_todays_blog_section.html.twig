@@ -1,0 +1,25 @@
+{# Section: Today's Blog Posts #}
+<div class="mt-5">
+  <h3 class="mb-3"><i class="bi bi-calendar-event"></i> 今日博客（历史上的今天）</h3>
+  {% if todays_blog_posts is defined and todays_blog_posts|length > 0 %}
+    <div class="row g-3">
+      {% for post in todays_blog_posts %}
+        <div class="col-12">
+          <div class="card shadow-sm border-0 h-100">
+            <div class="card-body py-3">
+              <h5 class="card-title d-flex align-items-baseline mb-2" style="gap: 1em;">
+                <a href="{{ post.permalink }}" target="_blank" rel="noopener" class="text-decoration-none">{{ post.title }}</a>
+                {% if post.yearsAgo %}
+                  <span class="text-muted small" style="white-space:nowrap;">({{ post.yearsAgo }}年前)</span>
+                {% endif %}
+              </h5>
+              <p class="card-text mb-0 text-secondary small">{{ post.excerpt }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info mb-0">今日暂无历史博客。</div>
+  {% endif %}
+</div>

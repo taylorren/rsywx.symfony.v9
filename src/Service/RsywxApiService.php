@@ -901,4 +901,26 @@ class RsywxApiService
             ];
         }
     }
+
+    /**
+     * Get WordPress posts published on today's date in previous years
+     */
+    public function getTodaysBlogPosts(bool $refresh = false): array
+    {
+        try {
+            $response = $this->makeRequestWithRetry('GET', '/wp/posts/today', [
+                'refresh' => $refresh
+            ]);
+            if ($response && isset($response['success']) && $response['success'] && isset($response['data']) && is_array($response['data'])) {
+                return array_map(fn($post) => \App\Service\BlogPost::fromArray($post), $response['data']);
+            }
+            return [];
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to get today\'s blog posts', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return [];
+        }
+    }
 }
