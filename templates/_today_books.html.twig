@@ -2,7 +2,7 @@
 <div class="today-books-section mb-5">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div class="d-flex align-items-center">
-            <i class="fas fa-calendar-day text-primary me-3" style="font-size: 1.5rem;"></i>
+            <i class="fas fa-calendar-day text-primary me-3 icon-lg"></i>
             <div>
                 <h3 class="mb-1 fw-bold">今日藏书</h3>
                 <p class="text-muted mb-0 small">在往年的今天购入的书籍</p>
@@ -97,11 +97,10 @@ function renderTodaysBooks(books) {
             <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card h-100 shadow-sm border-0 today-book-card">
                     <div class="position-relative">
-                        <img src="${coverUrl}" 
-                             class="card-img-top" 
-                             alt="${book.title}"
-                             style="height: 200px; object-fit: cover;"
-                             onerror="this.src='/images/default.webp'">
+                    <img src="${coverUrl}" 
+                        class="card-img-top cover-fit" 
+                        alt="${book.title}"
+                        onerror="this.src='/images/default.webp'">
                         <div class="position-absolute top-0 end-0 m-2">
                             <span class="badge bg-warning text-dark">
                                 <i class="fas fa-clock me-1"></i>
@@ -109,7 +108,7 @@ function renderTodaysBooks(books) {
                             </span>
                         </div>
                     </div>
-                    <div class="card-body d-flex flex-column">
+                        <div class="card-body d-flex flex-column">
                         <h6 class="card-title fw-bold mb-2 text-truncate" title="${book.title}">
                             ${book.title}
                         </h6>
@@ -128,8 +127,8 @@ function renderTodaysBooks(books) {
                                 </small>
                             </div>
                             <div class="mt-2">
-                                <a href="/books/${book.bookid}.html" 
-                                   class="btn btn-outline-primary btn-sm w-100">
+                    <a href="/books/${book.bookid}.html" 
+                        class="btn btn-outline-primary btn-sm w-100">
                                     <i class="fas fa-eye me-1"></i>
                                     查看详情
                                 </a>
@@ -165,23 +164,3 @@ document.addEventListener('DOMContentLoaded', function() {
     loadTodaysBooks();
 });
 </script>
-
-<style>
-.today-book-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.today-book-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-}
-
-.today-books-section .badge {
-    font-size: 0.85rem;
-}
-
-.spinner-border {
-    width: 2rem;
-    height: 2rem;
-}
-</style>

@@ -1,0 +1,86 @@
+.placeholder-cover {
+    height: 200px;
+}
+
+/* Word of the Day styles */
+.wotd-hero {
+    min-height: 200px;
+}
+.wotd-svg {
+    color: var(--bs-primary);
+}
+.wotd-circle {
+    width: 80px;
+    height: 80px;
+}
+.wotd-icon {
+    color: var(--bs-primary);
+}
+.wotd-heading {
+    color: var(--bs-primary);
+}
+.wotd-badge {
+    color: var(--bs-primary);
+}
+
+/* Today's books styles extracted from templates */
+.icon-lg {
+    font-size: 1.5rem;
+}
+
+.cover-fit {
+    height: 200px;
+    object-fit: cover;
+}
+
+.today-book-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.today-book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.today-books-section .badge {
+    font-size: 0.85rem;
+}
+
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Hero carousel styles */
+#heroCarousel .carousel-control-prev,
+#heroCarousel .carousel-control-next {
+    top: 75%;
+    transform: translateY(-50%);
+    height: 60px;
+    width: 60px;
+}
+
+.hero-slide {
+    background-size: cover;
+    background-position: center;
+    min-height: 500px;
+}
+
+.hero-hannibal {
+    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hannibal.webp');
+}
+.hero-hilbert {
+    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hilbert.webp');
+}
+.hero-keynes {
+    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/keynes.webp');
+}
+
+#heroCarousel .carousel-caption h1 {
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.icon-xxl {
+    font-size: 4rem;
+}

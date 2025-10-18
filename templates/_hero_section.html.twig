@@ -1,18 +1,5 @@
 <!-- Hero Section with Carousel -->
-<style>
-#heroCarousel .carousel-control-prev,
-#heroCarousel .carousel-control-next {
-    top: 75%;
-    transform: translateY(-50%);
-    height: 60px;
-    width: 60px;
-}
-
-#heroCarousel .carousel-caption h1 {
-    color: white !important;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-}
-</style>
+{# Styles moved to public/css/rsywx.css #}
 <div class="row mb-5">
     <div class="col-12">
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -23,21 +10,21 @@
             </div>
             <div class="carousel-inner rounded">
                 <div class="carousel-item active">
-                    <div class="hero-slide position-relative" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hannibal.webp'); background-size: cover; background-position: center; min-height: 500px;">
+                    <div class="hero-slide hero-hannibal position-relative">
                         <div class="carousel-caption d-flex flex-column justify-content-end h-100 text-start pb-5">
                             <h1 class="display-4 fw-bold">First principles, Clarice. Simplicity. </h1>
                         </div>
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <div class="hero-slide position-relative" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/hilbert.webp'); background-size: cover; background-position: center; min-height: 500px;">
+                    <div class="hero-slide hero-hilbert position-relative">
                         <div class="carousel-caption d-flex flex-column justify-content-end h-100 text-start pb-5">
                             <h1 class="display-4 fw-bold">Wir müssen wissen. <br>Wir werden wissen.</h1>
                         </div>
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <div class="hero-slide position-relative" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/images/keynes.webp'); background-size: cover; background-position: center; min-height: 500px;">
+                    <div class="hero-slide hero-keynes position-relative">
                         <div class="carousel-caption d-flex flex-column justify-content-end h-100 text-start pb-5">
                             <h1 class="display-4 fw-bold">...the sound principle is to take the most generous course.</h1>
                         </div>

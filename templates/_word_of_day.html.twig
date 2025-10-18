@@ -4,17 +4,17 @@
 <div class="bg-body-tertiary rounded-3 shadow-lg mb-4">
     <div class="row g-0 h-100">
         <!-- Left side with wave SVG -->
-        <div class="col-lg-4 position-relative overflow-hidden d-flex align-items-center justify-content-center" style="min-height: 200px;">
+    <div class="col-lg-4 position-relative overflow-hidden d-flex align-items-center justify-content-center wotd-hero">
             <!-- Decorative wave shape -->
-            <svg class="position-absolute start-0 top-0 w-100 h-100" style="color: var(--bs-primary);" preserveAspectRatio="none" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg class="position-absolute start-0 top-0 w-100 h-100 wotd-svg" preserveAspectRatio="none" viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0L67 12C133 24 267 48 400 55V200H0V0Z" fill="currentColor" opacity="0.1"></path>
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0 20L67 32C133 44 267 68 400 75V200H0V20Z" fill="currentColor" opacity="0.05"></path>
             </svg>
             <div class="position-relative z-1 text-center">
-                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 80px; height: 80px;">
-                    <i class="bi bi-lightbulb fs-1" style="color: var(--bs-primary);"></i>
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2 wotd-circle">
+                    <i class="bi bi-lightbulb fs-1 wotd-icon"></i>
                 </div>
-                <h6 class="text-uppercase mb-2" style="color: var(--bs-primary);">WOTD</h6>
+                <h6 class="text-uppercase mb-2 wotd-heading">WOTD</h6>
                 <a href="{{ path('word_of_day', {'refresh': 'true'}) }}" class="btn btn-outline-primary btn-sm" title="刷新每日一词">
                     <i class="bi bi-arrow-clockwise"></i>
                 </a>
@@ -24,10 +24,10 @@
         <!-- Right side with content -->
         <div class="col-lg-8 p-4">
             <div class="mb-3">
-                <h3 class="mb-2" style="color: var(--bs-primary);">{{ word_of_the_day.word }}</h3>
+                <h3 class="mb-2 wotd-heading">{{ word_of_the_day.word }}</h3>
                 <div class="d-flex flex-wrap align-items-baseline gap-2 mb-2">
                     {% if word_of_the_day.type %}
-                        <span class="badge bg-primary bg-opacity-10 border border-primary border-opacity-25 px-2 py-1" style="color: var(--bs-primary);">{{ word_of_the_day.type }}</span>
+                        <span class="badge bg-primary bg-opacity-10 border border-primary border-opacity-25 px-2 py-1 wotd-badge">{{ word_of_the_day.type }}</span>
                     {% endif %}
                 </div>
             </div>
