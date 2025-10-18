@@ -12,48 +12,12 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
         <!-- Font Awesome for dark mode icons -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-        <!-- RSYWX -->
-        <link rel="stylesheet" href="/css/rsywx.css">
+        
 
         {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
-        <style>
-            body {
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
-                padding-top: 76px; /* 为固定导航栏留出空间 */
-            }
-            .navbar-brand {
-                font-weight: bold;
-                font-size: 1.5rem;
-            }
-            .book-card {
-                transition: transform 0.2s;
-                height: 100%;
-            }
-            .book-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-            .stats-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-            }
-            .word-of-day {
-                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                color: white;
-            }
-            .search-box {
-                max-width: 600px;
-            }
-            footer {
-                margin-top: auto;
-            }
-            main {
-                flex: 1;
-            }
-        </style>
+        <!-- RSYWX -->
+        <link rel="stylesheet" href="/css/rsywx.css">
         {% endblock %}
 
         {% block javascripts %}

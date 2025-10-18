@@ -84,3 +84,41 @@
 .icon-xxl {
     font-size: 4rem;
 }
+
+/* base.html.twig inline styles moved here */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 76px; /* 为固定导航栏留出空间 */
+    text-autospace: normal;
+}
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+.book-card {
+    transition: transform 0.2s;
+    height: 100%;
+}
+.book-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+.word-of-day {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+.search-box {
+    max-width: 600px;
+}
+footer {
+    margin-top: auto;
+}
+main {
+    flex: 1;
+}
