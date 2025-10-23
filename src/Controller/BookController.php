@@ -242,10 +242,9 @@ class BookController extends AbstractController
     }
 
     /**
-     * Display unpopular books (least visited)
      * Display books purchased today (or on specific date)
      */
-    public function today(?int $month = null, ?int $date = null, Request $request): Response
+    public function today(Request $request, ?int $month = null, ?int $date = null): Response
     {
         try {
             $refresh = $request->query->getBoolean('refresh', false);
